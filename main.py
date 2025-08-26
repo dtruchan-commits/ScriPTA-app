@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query, HTTPException
 from typing import List, Optional
 from models import SwatchConfig, SwatchConfigResponse, ColorModel, ColorSpace
-from data import get_hardcoded_swatches
+from data import SWATCH_DATA
 
 app = FastAPI(
     title="SwatchWorx API",
@@ -26,7 +26,7 @@ async def get_swatch_config(colorname: Optional[str] = Query(None, description="
     """
     
     # Get all swatch data from external data module
-    all_swatches = get_hardcoded_swatches()
+    all_swatches = SWATCH_DATA
     
     # Filter by colorname if provided
     if colorname:

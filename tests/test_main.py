@@ -23,7 +23,7 @@ class TestGetSwatchConfigEndpoint:
     """Tests for the /get_swatch_config endpoint"""
     
     def test_get_all_swatches_without_filter(self, client):
-        """Test getting all swatches when no colorname filter is provided."""
+        """Test getting all swatches when no color name filter is provided."""
         response = client.get("/get_swatch_config")
         assert response.status_code == 200
         
@@ -33,73 +33,73 @@ class TestGetSwatchConfigEndpoint:
         
         # Verify structure of first swatch
         first_swatch = data["swatches"][0]
-        assert "colorname" in first_swatch
+        assert "colorName" in first_swatch
         assert "color_model" in first_swatch
         assert "color_space" in first_swatch
-        assert "colorvalues" in first_swatch
+        assert "colorValues" in first_swatch
     
     def test_get_swatches_with_valid_colorname_filter(self, client):
-        """Test filtering by a valid colorname."""
-        response = client.get("/get_swatch_config?colorname=DIELINE")
+        """Test filtering by a valid color name."""
+        response = client.get("/get_swatch_config?colorName=DIELINE")
         assert response.status_code == 200
         
         data = response.json()
         assert len(data["swatches"]) == 1
         
         swatch = data["swatches"][0]
-        assert swatch["colorname"] == "DIELINE"
+        assert swatch["colorName"] == "DIELINE"
         assert swatch["color_model"] == "SPOT"
         assert swatch["color_space"] == "CMYK"
-        assert swatch["colorvalues"] == "0,50,100,0"
+        assert swatch["colorValues"] == "0,50,100,0"
     
     def test_get_swatches_with_another_valid_colorname(self, client):
-        """Test filtering by another valid colorname."""
-        response = client.get("/get_swatch_config?colorname=PA123")
+        """Test filtering by another valid color name."""
+        response = client.get("/get_swatch_config?colorName=PA123")
         assert response.status_code == 200
         
         data = response.json()
         assert len(data["swatches"]) == 1
         
         swatch = data["swatches"][0]
-        assert swatch["colorname"] == "PA123"
+        assert swatch["colorName"] == "PA123"
         assert swatch["color_model"] == "SPOT"
         assert swatch["color_space"] == "CMYK"
-        assert swatch["colorvalues"] == "50,50,50,50"
+        assert swatch["colorValues"] == "50,50,50,50"
     
     def test_get_swatches_with_process_color_model(self, client):
-        """Test filtering by colorname that has PROCESS color model."""
-        response = client.get("/get_swatch_config?colorname=PA321")
+        """Test filtering by color name that has PROCESS color model."""
+        response = client.get("/get_swatch_config?colorName=PA321")
         assert response.status_code == 200
         
         data = response.json()
         assert len(data["swatches"]) == 1
         
         swatch = data["swatches"][0]
-        assert swatch["colorname"] == "PA321"
+        assert swatch["colorName"] == "PA321"
         assert swatch["color_model"] == "PROCESS"
         assert swatch["color_space"] == "CMYK"
-        assert swatch["colorvalues"] == "40,40,40,40"
+        assert swatch["colorValues"] == "40,40,40,40"
     
     def test_get_swatches_with_invalid_colorname_returns_404(self, client):
-        """Test that filtering by invalid colorname returns 404."""
-        response = client.get("/get_swatch_config?colorname=NONEXISTENT")
+        """Test that filtering by invalid color name returns 404."""
+        response = client.get("/get_swatch_config?colorName=NONEXISTENT")
         assert response.status_code == 404
         
         data = response.json()
         assert "detail" in data
-        assert data["detail"] == "Colorname 'NONEXISTENT' not found"
+        assert data["detail"] == "Color name 'NONEXISTENT' not found"
     
     def test_get_swatches_with_empty_colorname(self, client):
-        """Test behavior when colorname parameter is empty."""
-        response = client.get("/get_swatch_config?colorname=")
-        # Empty colorname is treated as None, so returns all swatches
+        """Test behavior when color name parameter is empty."""
+        response = client.get("/get_swatch_config?colorName=")
+        # Empty color name is treated as None, so returns all swatches
         assert response.status_code == 200
         data = response.json()
         assert len(data["swatches"]) == len(SWATCH_DATA)
     
     def test_get_swatches_case_sensitive_colorname(self, client):
-        """Test that colorname filtering is case sensitive."""
-        response = client.get("/get_swatch_config?colorname=dieline")
+        """Test that color name filtering is case sensitive."""
+        response = client.get("/get_swatch_config?colorName=dieline")
         assert response.status_code == 404
         assert "not found" in response.json()["detail"]
     
@@ -118,29 +118,29 @@ class TestGetSwatchConfigEndpoint:
         # Check each swatch structure
         for swatch in data["swatches"]:
             assert isinstance(swatch, dict)
-            assert "colorname" in swatch
+            assert "colorName" in swatch
             assert "color_model" in swatch
             assert "color_space" in swatch
-            assert "colorvalues" in swatch
+            assert "colorValues" in swatch
             
             # Validate types
-            assert isinstance(swatch["colorname"], str)
+            assert isinstance(swatch["colorName"], str)
             assert isinstance(swatch["color_model"], str)
             assert isinstance(swatch["color_space"], str)
-            assert isinstance(swatch["colorvalues"], str)
+            assert isinstance(swatch["colorValues"], str)
             
             # Validate enum values
             assert swatch["color_model"] in ["SPOT", "PROCESS"]
             assert swatch["color_space"] in ["CMYK", "RGB", "LAB"]
     
     def test_multiple_query_parameters(self, client):
-        """Test behavior with multiple query parameters (only colorname should be used)."""
-        response = client.get("/get_swatch_config?colorname=DIELINE&other_param=value")
+        """Test behavior with multiple query parameters (only color name should be used)."""
+        response = client.get("/get_swatch_config?colorName=DIELINE&other_param=value")
         assert response.status_code == 200
         
         data = response.json()
         assert len(data["swatches"]) == 1
-        assert data["swatches"][0]["colorname"] == "DIELINE"
+        assert data["swatches"][0]["colorName"] == "DIELINE"
     
     def test_content_type_header(self, client):
         """Test that the endpoint returns correct content type."""
@@ -153,10 +153,10 @@ class TestGetSwatchConfigEndpoint:
         assert response.status_code == 200
         
         data = response.json()
-        colornames = [swatch["colorname"] for swatch in data["swatches"]]
-        expected_colornames = [swatch.colorname for swatch in SWATCH_DATA]
+        color_names = [swatch["colorName"] for swatch in data["swatches"]]
+        expected_color_names = [swatch.color_name for swatch in SWATCH_DATA]
         
-        assert set(colornames) == set(expected_colornames)
+        assert set(color_names) == set(expected_color_names)
     
     def test_swatch_data_integrity(self, client):
         """Test that returned data matches the source data exactly."""
@@ -165,17 +165,17 @@ class TestGetSwatchConfigEndpoint:
         
         data = response.json()
         
-        # Create a mapping of returned data by colorname for easy lookup
-        returned_swatches = {swatch["colorname"]: swatch for swatch in data["swatches"]}
+        # Create a mapping of returned data by color name for easy lookup
+        returned_swatches = {swatch["colorName"]: swatch for swatch in data["swatches"]}
         
         # Compare each swatch in SWATCH_DATA with returned data
         for expected_swatch in SWATCH_DATA:
-            returned_swatch = returned_swatches[expected_swatch.colorname]
+            returned_swatch = returned_swatches[expected_swatch.color_name]
             
-            assert returned_swatch["colorname"] == expected_swatch.colorname
+            assert returned_swatch["colorName"] == expected_swatch.color_name
             assert returned_swatch["color_model"] == expected_swatch.color_model
             assert returned_swatch["color_space"] == expected_swatch.color_space
-            assert returned_swatch["colorvalues"] == expected_swatch.colorvalues
+            assert returned_swatch["colorValues"] == expected_swatch.color_values
 
 
 class TestEndpointEdgeCases:
@@ -202,10 +202,10 @@ def sample_swatch_data():
     """Fixture providing sample swatch data for testing."""
     return [
         SwatchConfig(
-            colorname="TEST_COLOR",
+            color_name="TEST_COLOR",
             color_model=ColorModel.SPOT,
             color_space=ColorSpace.RGB,
-            colorvalues="255,0,0"
+            color_values="255,0,0"
         )
     ]
 
@@ -225,18 +225,18 @@ class TestDataConsistency:
             assert swatch["color_space"] in ["CMYK", "RGB", "LAB"]
     
     def test_colorvalues_format(self, client):
-        """Test that colorvalues are in expected comma-separated format."""
+        """Test that color values are in expected comma-separated format."""
         response = client.get("/get_swatch_config")
         data = response.json()
         
         for swatch in data["swatches"]:
-            colorvalues = swatch["colorvalues"]
+            color_values = swatch["colorValues"]
             # Should be comma-separated values
-            assert isinstance(colorvalues, str)
-            assert "," in colorvalues or colorvalues.isdigit()  # Single value or comma-separated
+            assert isinstance(color_values, str)
+            assert "," in color_values or color_values.isdigit()  # Single value or comma-separated
             
             # Split and check that all parts are numeric
-            values = colorvalues.split(",")
+            values = color_values.split(",")
             for value in values:
                 assert value.strip().isdigit(), f"Invalid color value: {value}"
 
@@ -245,20 +245,20 @@ class TestParameterizedTests:
     """Parametrized tests using fixtures"""
     
     def test_valid_colornames(self, client, sample_colornames):
-        """Test all valid colornames return correct results."""
-        for colorname in sample_colornames:
-            response = client.get(f"/get_swatch_config?colorname={colorname}")
+        """Test all valid color names return correct results."""
+        for color_name in sample_colornames:
+            response = client.get(f"/get_swatch_config?colorName={color_name}")
             assert response.status_code == 200
             data = response.json()
             assert len(data["swatches"]) == 1
-            assert data["swatches"][0]["colorname"] == colorname
+            assert data["swatches"][0]["colorName"] == color_name
     
     def test_invalid_colornames(self, client, invalid_colornames):
-        """Test all invalid colornames return 404."""
-        for colorname in invalid_colornames:
-            response = client.get(f"/get_swatch_config?colorname={colorname}")
-            if colorname == "":
-                # Empty colorname returns all swatches
+        """Test all invalid color names return 404."""
+        for color_name in invalid_colornames:
+            response = client.get(f"/get_swatch_config?colorName={color_name}")
+            if color_name == "":
+                # Empty color name returns all swatches
                 assert response.status_code == 200
             else:
                 assert response.status_code == 404

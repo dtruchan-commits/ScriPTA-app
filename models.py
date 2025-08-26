@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class ColorModel(str, Enum):
@@ -15,14 +15,15 @@ class ColorSpace(str, Enum):
 
 
 class SwatchConfig(BaseModel):
-    colorname: str
+    model_config = ConfigDict(
+        use_enum_values=True,
+        populate_by_name=True
+    )
+    
+    color_name: str = Field(..., alias="colorName")
     color_model: ColorModel
     color_space: ColorSpace
-    colorvalues: str
-
-    class Config:
-        # Allow use of enum values in JSON serialization
-        use_enum_values = True
+    color_values: str = Field(..., alias="colorValues")
 
 
 class SwatchConfigResponse(BaseModel):

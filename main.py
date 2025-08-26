@@ -11,28 +11,28 @@ app = FastAPI(
 
 
 @app.get("/get_swatch_config", response_model=SwatchConfigResponse)
-async def get_swatch_config(colorname: Optional[str] = Query(None, description="Filter by colorname")) -> SwatchConfigResponse:
+async def get_swatch_config(color_name: Optional[str] = Query(None, description="Filter by color name", alias="colorName")) -> SwatchConfigResponse:
     """
-    Get swatch configuration data, optionally filtered by colorname.
+    Get swatch configuration data, optionally filtered by color name.
     
     Args:
-        colorname: Optional colorname to filter results (e.g., "DIELINE")
+        color_name: Optional color name to filter results (e.g., "DIELINE")
     
     Returns swatch configuration in the format:
-    - Colorname: Name of the color
+    - ColorName: Name of the color
     - Color Model: SPOT or PROCESS
     - Color Space: CMYK, RGB, LAB
-    - Colorvalues: Color values as comma-separated string
+    - ColorValues: Color values as comma-separated string
     """
     
     # Get all swatch data from external data module
     all_swatches = SWATCH_DATA
     
-    # Filter by colorname if provided
-    if colorname:
-        filtered_swatches = [swatch for swatch in all_swatches if swatch.colorname == colorname]
+    # Filter by color_name if provided
+    if color_name:
+        filtered_swatches = [swatch for swatch in all_swatches if swatch.color_name == color_name]
         if not filtered_swatches:
-            raise HTTPException(status_code=404, detail=f"Colorname '{colorname}' not found")
+            raise HTTPException(status_code=404, detail=f"Color name '{color_name}' not found")
         return SwatchConfigResponse(swatches=filtered_swatches)
     
     # Return all swatches if no filter is provided

@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from typing import List
+from fastapi import FastAPI, Query, HTTPException
+from typing import List, Optional
 from models import SwatchConfig, SwatchConfigResponse, ColorModel, ColorSpace
 from data import get_hardcoded_swatches
 
@@ -11,9 +11,12 @@ app = FastAPI(
 
 
 @app.get("/get_swatch_config", response_model=SwatchConfigResponse)
-async def get_swatch_config() -> SwatchConfigResponse:
+async def get_swatch_config(colorname: Optional[str] = Query(None, description="Filter by colorname")) -> SwatchConfigResponse:
     """
-    Get hardcoded swatch configuration data.
+    Get swatch configuration data, optionally filtered by colorname.
+    
+    Args:
+        colorname: Optional colorname to filter results (e.g., "DIELINE")
     
     Returns swatch configuration in the format:
     - Colorname: Name of the color
@@ -22,10 +25,18 @@ async def get_swatch_config() -> SwatchConfigResponse:
     - Colorvalues: Color values as comma-separated string
     """
     
-    # Get swatch data from external data module
-    hardcoded_swatches = get_hardcoded_swatches()
+    # Get all swatch data from external data module
+    all_swatches = get_hardcoded_swatches()
     
-    return SwatchConfigResponse(swatches=hardcoded_swatches)
+    # Filter by colorname if provided
+    if colorname:
+        filtered_swatches = [swatch for swatch in all_swatches if swatch.colorname == colorname]
+        if not filtered_swatches:
+            raise HTTPException(status_code=404, detail=f"Colorname '{colorname}' not found")
+        return SwatchConfigResponse(swatches=filtered_swatches)
+    
+    # Return all swatches if no filter is provided
+    return SwatchConfigResponse(swatches=all_swatches)
 
 
 @app.get("/")

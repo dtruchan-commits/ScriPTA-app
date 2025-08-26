@@ -1,12 +1,14 @@
 # SwatchWorx API
 
-A FastAPI backend application that provides swatch configuration data.
+A simple FastAPI backend application that provides swatch configuration data.
 
 ## Features
 
-- FastAPI backend with type safety using Pydantic models
-- `/get_swatch_config` endpoint that returns hardcoded swatch configuration
-- Proper type definitions using Enums for Color Model and Color Space
+- FastAPI backend with basic type safety using Pydantic models
+- `/get_swatch_config` endpoint that returns swatch configuration data
+- Optional filtering by colorname parameter
+- Basic error handling for non-existent colornames
+- Type definitions using Enums for Color Model and Color Space
 - JSON response format with structured data
 
 ## Installation
@@ -32,9 +34,38 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 ### GET /get_swatch_config
 
-Returns swatch configuration data in JSON format.
+Returns swatch configuration data in JSON format. Optionally accepts a `colorname` query parameter to filter results.
 
-**Response format:**
+**Parameters:**
+- `colorname` (optional): Filter results by specific colorname (e.g., "DIELINE", "PA123")
+
+**Examples:**
+
+Get all swatches:
+```bash
+GET /get_swatch_config
+```
+
+Get specific swatch:
+```bash
+GET /get_swatch_config?colorname=DIELINE
+```
+
+**Response format for filtered request:**
+```json
+{
+  "swatches": [
+    {
+      "colorname": "DIELINE",
+      "color_model": "SPOT",
+      "color_space": "CMYK",
+      "colorvalues": "0,50,100,0"
+    }
+  ]
+}
+```
+
+**Response format for all swatches:**
 ```json
 {
   "swatches": [
@@ -60,13 +91,20 @@ Returns swatch configuration data in JSON format.
 }
 ```
 
+**Error handling:**
+- Returns 404 status code with error message if colorname is not found
+
 ## Project Structure
 
 ```
 swatchworx-app/
 ├── main.py          # FastAPI application and endpoints
-├── models.py        # Pydantic models and type definitions
-├── data.py          # Hardcoded swatch data
+├── models.py        # Pydantic models and type definitions  
+├── data.py          # Sample swatch data
 ├── requirements.txt # Python dependencies
-└── README.md       # This file
+└── README.md       # Documentation
 ```
+
+## Implementation Notes
+
+This is a basic implementation that currently uses hardcoded swatch data. The filtering functionality works by matching the exact colorname provided in the query parameter. Error handling is minimal but functional for the current use case.

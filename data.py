@@ -31,7 +31,6 @@ def get_hardcoded_swatches() -> List[SwatchConfig]:
     ]
 
 
-# Alternative: You can also define the data as a constant if preferred
 SWATCH_DATA = [
     SwatchConfig(
         colorname="DIELINE",

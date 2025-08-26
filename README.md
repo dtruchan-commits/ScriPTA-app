@@ -66,6 +66,7 @@ Returns swatch configuration data in JSON format.
 swatchworx-app/
 ├── main.py          # FastAPI application and endpoints
 ├── models.py        # Pydantic models and type definitions
+├── data.py          # Hardcoded swatch data
 ├── requirements.txt # Python dependencies
 └── README.md       # This file
 ```

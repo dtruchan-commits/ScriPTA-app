@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from typing import List
 from models import SwatchConfig, SwatchConfigResponse, ColorModel, ColorSpace
+from data import get_hardcoded_swatches
 
 app = FastAPI(
     title="SwatchWorx API",
@@ -21,27 +22,8 @@ async def get_swatch_config() -> SwatchConfigResponse:
     - Colorvalues: Color values as comma-separated string
     """
     
-    # Hardcoded swatch data as specified
-    hardcoded_swatches = [
-        SwatchConfig(
-            colorname="DIELINE",
-            color_model=ColorModel.SPOT,
-            color_space=ColorSpace.CMYK,
-            colorvalues="0,50,100,0"
-        ),
-        SwatchConfig(
-            colorname="PA123",
-            color_model=ColorModel.SPOT,
-            color_space=ColorSpace.CMYK,
-            colorvalues="50,50,50,50"
-        ),
-        SwatchConfig(
-            colorname="PA321",
-            color_model=ColorModel.PROCESS,
-            color_space=ColorSpace.CMYK,
-            colorvalues="40,40,40,40"
-        )
-    ]
+    # Get swatch data from external data module
+    hardcoded_swatches = get_hardcoded_swatches()
     
     return SwatchConfigResponse(swatches=hardcoded_swatches)
 

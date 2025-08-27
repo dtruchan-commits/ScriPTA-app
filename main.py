@@ -1,8 +1,17 @@
-from fastapi import FastAPI, Query, HTTPException
 from typing import List, Optional
-from models import SwatchConfig, SwatchConfigResponse, ColorModel, ColorSpace, LayerConfigSetResponse, LayerConfigResponse
-from data.swatches import SWATCH_DATA
+
+from fastapi import FastAPI, HTTPException, Query
+
 from data.layers import LAYER_DATA
+from data.swatches import SWATCH_DATA
+from models import (
+    ColorModel,
+    ColorSpace,
+    LayerConfigResponse,
+    LayerConfigSetResponse,
+    SwatchConfig,
+    SwatchConfigResponse,
+)
 
 app = FastAPI(
     title="SwatchWorx API",
@@ -31,6 +40,8 @@ async def get_swatch_config(color_name: Optional[str] = Query(None, description=
     
     # Filter by color_name if provided
     if color_name:
+
+        
         filtered_swatches = [swatch for swatch in all_swatches if swatch.color_name == color_name]
         if not filtered_swatches:
             raise HTTPException(status_code=404, detail=f"Color name '{color_name}' not found")
@@ -58,6 +69,7 @@ async def get_layer_config(config_name: Optional[str] = Query(None, description=
     
     # Filter by config_name if provided
     if config_name:
+        
         filtered_configs = [config for config in all_layer_configs if config.config_name == config_name]
         if not filtered_configs:
             raise HTTPException(status_code=404, detail=f"Config name '{config_name}' not found")

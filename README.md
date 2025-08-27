@@ -32,6 +32,7 @@ pip install black isort flake8 mypy
     - isort (Microsoft) - Import sorting
     - Flake8 (Microsoft) - Linting
     - Mypy Type Checker (Microsoft) - Static type checking
+    - Prettify JSON (Mohsen Azimi)
 
 ## Running the Application
 

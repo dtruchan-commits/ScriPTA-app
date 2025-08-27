@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List
 from pydantic import BaseModel, Field, ConfigDict
 
-
+# Enums
 class ColorModel(str, Enum):
     SPOT = "SPOT"
     PROCESS = "PROCESS"
@@ -13,7 +13,7 @@ class ColorSpace(str, Enum):
     RGB = "RGB"
     LAB = "LAB"
 
-
+# Models
 class SwatchConfig(BaseModel):
     model_config = ConfigDict(
         use_enum_values=True,

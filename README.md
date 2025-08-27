@@ -13,17 +13,24 @@ A simple FastAPI backend application that provides swatch configuration data.
 
 ## Installation
 
-1. Install dependencies:
+1. Set up conda environment:
+```bash
+conda init
+conda create -n swa python=3.12
+conda activate swa
+```
+
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Install development dependencies:
+3. Install development dependencies:
 ```bash
 pip install black isort flake8 mypy
 ```
 
-3. VSCode Extensions (Recommended):
+4. VSCode Extensions (Recommended):
     - Python (Microsoft) - Core Python support
     - Python Debugger (Microsoft) - Debugging support
     - Pylance (Microsoft) - Language server with IntelliSense

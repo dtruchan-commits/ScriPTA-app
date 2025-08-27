@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum
 from typing import List
-from pydantic import BaseModel, Field, ConfigDict
+
+from pydantic import BaseModel, ConfigDict, Field
+
 
 # Enums
 class ColorModel(str, Enum):
@@ -62,8 +64,8 @@ class SwatchConfig(BaseModel):
     )
     
     color_name: str = Field(..., alias="colorName")
-    color_model: ColorModel
-    color_space: ColorSpace
+    color_model: ColorModel = Field(..., alias="colorModel")
+    color_space: ColorSpace = Field(..., alias="colorSpace")
     color_values: str = Field(..., alias="colorValues")
 
 

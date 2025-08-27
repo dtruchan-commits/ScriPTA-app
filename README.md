@@ -18,6 +18,21 @@ A simple FastAPI backend application that provides swatch configuration data.
 pip install -r requirements.txt
 ```
 
+2. Install development dependencies:
+```bash
+pip install black isort flake8 mypy
+```
+
+3. VSCode Extensions (Recommended):
+    - Python (Microsoft) - Core Python support
+    - Python Debugger (Microsoft) - Debugging support
+    - Pylance (Microsoft) - Language server with IntelliSense
+    - Python Environments (Microsoft) - Environment management
+    - Black Formatter (Microsoft) - Code formatting
+    - isort (Microsoft) - Import sorting
+    - Flake8 (Microsoft) - Linting
+    - Mypy Type Checker (Microsoft) - Static type checking
+
 ## Running the Application
 
 1. Start the development server:

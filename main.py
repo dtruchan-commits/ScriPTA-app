@@ -20,10 +20,10 @@ async def get_swatch_config(color_name: Optional[str] = Query(None, description=
         color_name: Optional color name to filter results (e.g., "DIELINE")
     
     Returns swatch configuration in the format:
-    - ColorName: Name of the color
+    - Color Name: Name of the color
     - Color Model: SPOT or PROCESS
     - Color Space: CMYK, RGB, LAB
-    - ColorValues: Color values as comma-separated string
+    - Color Values: Color values as comma-separated string
     """
     
     # Get all swatch data from external data module

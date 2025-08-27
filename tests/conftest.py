@@ -23,3 +23,15 @@ def sample_colornames():
 def invalid_colornames():
     """Provide invalid colornames for testing."""
     return ["NONEXISTENT", "INVALID", "NOT_FOUND", "", "lowercase"]
+
+
+@pytest.fixture
+def sample_config_names():
+    """Provide sample config names for testing."""
+    return ["default", "FoldingBox", "Label", "TPM"]
+
+
+@pytest.fixture
+def invalid_config_names():
+    """Provide invalid config names for testing."""
+    return ["NONEXISTENT", "INVALID", "NOT_FOUND", "DEFAULT", "foldingbox"]

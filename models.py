@@ -69,3 +69,25 @@ class SwatchConfig(BaseModel):
 
 class SwatchConfigResponse(BaseModel):
     swatches: List[SwatchConfig]
+
+
+class LayerConfigResponse(BaseModel):
+    model_config = ConfigDict(
+        use_enum_values=True,
+        populate_by_name=True
+    )
+    
+    name: str
+    locked: bool
+    print: bool
+    color: str
+
+
+class LayerConfigSetResponse(BaseModel):
+    model_config = ConfigDict(
+        use_enum_values=True,
+        populate_by_name=True
+    )
+    
+    config_name: str = Field(..., alias="configName")
+    layers: List[LayerConfigResponse]

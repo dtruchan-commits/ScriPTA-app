@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Query, HTTPException
 from typing import List, Optional
-from models import SwatchConfig, SwatchConfigResponse, ColorModel, ColorSpace
+from models import SwatchConfig, SwatchConfigResponse, ColorModel, ColorSpace, LayerConfigSetResponse, LayerConfigResponse
 from data.swatches import SWATCH_DATA
+from data.layers import LAYER_DATA
 
 app = FastAPI(
     title="SwatchWorx API",
@@ -37,6 +38,53 @@ async def get_swatch_config(color_name: Optional[str] = Query(None, description=
     
     # Return all swatches if no filter is provided
     return SwatchConfigResponse(swatches=all_swatches)
+
+
+@app.get("/get_layer_config", response_model=List[LayerConfigSetResponse])
+async def get_layer_config(config_name: Optional[str] = Query(None, description="Filter by config name", alias="configName")) -> List[LayerConfigSetResponse]:
+    """
+    Get layer configuration data, optionally filtered by config name.
+    
+    Args:
+        config_name: Optional config name to filter results (e.g., "default", "FoldingBox")
+    
+    Returns layer configuration in the format:
+    - configName: Name of the configuration
+    - layers: List of layer configurations with name, locked, print, and color properties
+    """
+    
+    # Get all layer data
+    all_layer_configs = LAYER_DATA
+    
+    # Filter by config_name if provided
+    if config_name:
+        filtered_configs = [config for config in all_layer_configs if config.config_name == config_name]
+        if not filtered_configs:
+            raise HTTPException(status_code=404, detail=f"Config name '{config_name}' not found")
+        selected_configs = filtered_configs
+    else:
+        selected_configs = all_layer_configs
+    
+    # Convert to response format
+    response_configs = []
+    for config in selected_configs:
+        response_layers = [
+            LayerConfigResponse(
+                name=layer.name.value,
+                locked=layer.locked,
+                print=layer.print,
+                color=layer.color.value
+            )
+            for layer in config.layers
+        ]
+        response_configs.append(
+            LayerConfigSetResponse(
+                config_name=config.config_name,
+                layers=response_layers
+            )
+        )
+    
+    return response_configs
 
 
 @app.get("/")

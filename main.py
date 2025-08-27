@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query, HTTPException
 from typing import List, Optional
 from models import SwatchConfig, SwatchConfigResponse, ColorModel, ColorSpace
-from data import SWATCH_DATA
+from data.swatches import SWATCH_DATA
 
 app = FastAPI(
     title="SwatchWorx API",

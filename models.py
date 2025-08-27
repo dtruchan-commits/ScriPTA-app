@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 from typing import List
 from pydantic import BaseModel, Field, ConfigDict
@@ -13,7 +14,47 @@ class ColorSpace(str, Enum):
     RGB = "RGB"
     LAB = "LAB"
 
-# Models
+
+class LayerName(str, Enum):
+    DIELINE = "DIELINE"
+    TECHNICAL = "TECHNICAL"
+    BRAILLE_EMB = "BRAILLE_EMB"
+    TEXT = "TEXT"
+    ACF_HRL = "ACF_HRL"
+    ACF_LRA_VARNISH = "ACF_LRA_VARNISH"
+    DESIGN = "DESIGN"
+    INFOBOX = "INFOBOX"
+    GUIDES = "GUIDES"
+    PANEL = "PANEL"
+
+
+class LayerColor(str, Enum):
+    GOLD = "GOLD"
+    TEAL = "TEAL"
+    FIESTA = "FIESTA"
+    LIGHT_BLUE = "LIGHT_BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
+    RED = "RED"
+    LAVENDER = "LAVENDER"
+    GRAY = "GRAY"
+    BLUE = "BLUE"
+
+
+@dataclass
+class LayerConfig:
+    name: LayerName
+    locked: bool
+    print: bool
+    color: LayerColor
+
+
+@dataclass
+class LayerConfigSet:
+    config_name: str
+    layers: List[LayerConfig]
+
+
 class SwatchConfig(BaseModel):
     model_config = ConfigDict(
         use_enum_values=True,

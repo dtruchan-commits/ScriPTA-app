@@ -63,10 +63,10 @@ class SwatchConfig(BaseModel):
         populate_by_name=True
     )
     
-    color_name: str = Field(..., alias="colorName")
-    color_model: ColorModel = Field(..., alias="colorModel")
-    color_space: ColorSpace = Field(..., alias="colorSpace")
-    color_values: List[int] = Field(..., alias="colorValues")
+    color_name: str = Field(..., alias="colorName", description="Name of the color")
+    color_model: ColorModel = Field(..., alias="colorModel", description="Color model: SPOT or PROCESS")
+    color_space: ColorSpace = Field(..., alias="colorSpace", description="Color space: CMYK, RGB, or LAB(maybe)")
+    color_values: List[int] = Field(..., alias="colorValues", description="Color values as an array of integers")
 
 
 class SwatchConfigResponse(BaseModel):

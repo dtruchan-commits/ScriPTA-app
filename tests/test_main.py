@@ -34,11 +34,11 @@ class TestGetSwatchConfigEndpoint:
         
         # Verify structure of first swatch
         first_swatch = data["swatches"][0]
-        assert "colorName" in first_swatch
+        assert "color_name" in first_swatch
         assert "color_model" in first_swatch
         assert "color_space" in first_swatch
-        assert "colorValues" in first_swatch
-    
+        assert "color_values" in first_swatch
+
     def test_get_swatches_with_valid_colorname_filter(self, client):
         """Test filtering by a valid color name."""
         response = client.get("/get_swatch_config?colorName=DIELINE")

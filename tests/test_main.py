@@ -50,7 +50,7 @@ class TestGetSwatchConfigEndpoint:
         assert swatch["colorName"] == "DIELINE"
         assert swatch["color_model"] == "SPOT"
         assert swatch["color_space"] == "CMYK"
-        assert swatch["colorValues"] == "0,50,100,0"
+        assert swatch["colorValues"] == "50,50,0,0"
     
     def test_get_swatches_with_another_valid_colorname(self, client):
         """Test filtering by another valid color name."""
@@ -64,7 +64,7 @@ class TestGetSwatchConfigEndpoint:
         assert swatch["colorName"] == "PA123"
         assert swatch["color_model"] == "SPOT"
         assert swatch["color_space"] == "CMYK"
-        assert swatch["colorValues"] == "50,50,50,50"
+        assert swatch["colorValues"] == "0,24,94,0"
     
     def test_get_swatches_with_process_color_model(self, client):
         """Test filtering by color name that has PROCESS color model."""
@@ -76,9 +76,9 @@ class TestGetSwatchConfigEndpoint:
         
         swatch = data["swatches"][0]
         assert swatch["colorName"] == "PA321"
-        assert swatch["color_model"] == "PROCESS"
+        assert swatch["color_model"] == "SPOT"
         assert swatch["color_space"] == "CMYK"
-        assert swatch["colorValues"] == "40,40,40,40"
+        assert swatch["colorValues"] == "95,20,25,20"
     
     def test_get_swatches_with_invalid_colorname_returns_404(self, client):
         """Test that filtering by invalid color name returns 404."""
@@ -239,6 +239,144 @@ class TestDataConsistency:
             values = color_values.split(",")
             for value in values:
                 assert value.strip().isdigit(), f"Invalid color value: {value}"
+
+
+class TestSpecificSwatchData:
+    """Tests to verify specific swatches are present in SWATCH_DATA"""
+    
+    def test_c20m90y0k40_swatch_present(self, client):
+        """Test that C20M90Y0K40 swatch is present with correct data."""
+        response = client.get("/get_swatch_config?colorName=C20M90Y0K40")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["swatches"]) == 1
+        
+        swatch = data["swatches"][0]
+        assert swatch["colorName"] == "C20M90Y0K40"
+        assert swatch["color_model"] == "PROCESS"
+        assert swatch["color_space"] == "CMYK"
+        assert swatch["colorValues"] == "20,90,0,40"
+    
+    def test_proc699_swatch_present(self, client):
+        """Test that PROC699 swatch is present with correct data."""
+        response = client.get("/get_swatch_config?colorName=PROC699")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["swatches"]) == 1
+        
+        swatch = data["swatches"][0]
+        assert swatch["colorName"] == "PROC699"
+        assert swatch["color_model"] == "PROCESS"
+        assert swatch["color_space"] == "CMYK"
+        assert swatch["colorValues"] == "0,30,7,0"
+    
+    def test_embossing_swatch_present(self, client):
+        """Test that EMBOSSING swatch is present with correct data."""
+        response = client.get("/get_swatch_config?colorName=EMBOSSING")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["swatches"]) == 1
+        
+        swatch = data["swatches"][0]
+        assert swatch["colorName"] == "EMBOSSING"
+        assert swatch["color_model"] == "SPOT"
+        assert swatch["color_space"] == "CMYK"
+        assert swatch["colorValues"] == "70,0,70,0"
+    
+    def test_not_printable_swatch_present(self, client):
+        """Test that NOT_PRINTABLE swatch is present with correct data."""
+        response = client.get("/get_swatch_config?colorName=NOT_PRINTABLE")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["swatches"]) == 1
+        
+        swatch = data["swatches"][0]
+        assert swatch["colorName"] == "NOT_PRINTABLE"
+        assert swatch["color_model"] == "SPOT"
+        assert swatch["color_space"] == "CMYK"
+        assert swatch["colorValues"] == "0,100,0,0"
+    
+    def test_pa301_swatch_present(self, client):
+        """Test that PA301 swatch is present with correct data."""
+        response = client.get("/get_swatch_config?colorName=PA301")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["swatches"]) == 1
+        
+        swatch = data["swatches"][0]
+        assert swatch["colorName"] == "PA301"
+        assert swatch["color_model"] == "SPOT"
+        assert swatch["color_space"] == "CMYK"
+        assert swatch["colorValues"] == "100,45,0,18"
+    
+    def test_pa520_swatch_present(self, client):
+        """Test that PA520 swatch is present with correct data."""
+        response = client.get("/get_swatch_config?colorName=PA520")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["swatches"]) == 1
+        
+        swatch = data["swatches"][0]
+        assert swatch["colorName"] == "PA520"
+        assert swatch["color_model"] == "SPOT"
+        assert swatch["color_space"] == "CMYK"
+        assert swatch["colorValues"] == "69,94,18,0"
+    
+    def test_paprocyan_swatch_present(self, client):
+        """Test that PAPROCYAN swatch is present with correct data."""
+        response = client.get("/get_swatch_config?colorName=PAPROCYAN")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["swatches"]) == 1
+        
+        swatch = data["swatches"][0]
+        assert swatch["colorName"] == "PAPROCYAN"
+        assert swatch["color_model"] == "SPOT"
+        assert swatch["color_space"] == "CMYK"
+        assert swatch["colorValues"] == "100,0,0,0"
+    
+    def test_white_opaque_swatch_present(self, client):
+        """Test that WHITE_OPAQUE swatch is present with correct data."""
+        response = client.get("/get_swatch_config?colorName=WHITE_OPAQUE")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["swatches"]) == 1
+        
+        swatch = data["swatches"][0]
+        assert swatch["colorName"] == "WHITE_OPAQUE"
+        assert swatch["color_model"] == "SPOT"
+        assert swatch["color_space"] == "CMYK"
+        assert swatch["colorValues"] == "27,4,0,0"
+    
+    def test_all_required_swatches_present(self, client):
+        """Test that all required swatches are present in the data."""
+        required_swatches = [
+            "C20M90Y0K40",
+            "PROC699", 
+            "EMBOSSING",
+            "NOT_PRINTABLE",
+            "PA301",
+            "PA520",
+            "PAPROCYAN",
+            "WHITE_OPAQUE"
+        ]
+        
+        response = client.get("/get_swatch_config")
+        assert response.status_code == 200
+        
+        data = response.json()
+        returned_color_names = [swatch["colorName"] for swatch in data["swatches"]]
+        
+        for required_swatch in required_swatches:
+            assert required_swatch in returned_color_names, f"Required swatch '{required_swatch}' not found in data"
 
 
 class TestParameterizedTests:

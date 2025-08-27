@@ -1,7 +1,8 @@
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient
 from fastapi import FastAPI
+from httpx import ASGITransport, AsyncClient
+
 from main import app
 
 
@@ -11,7 +12,8 @@ class TestAsyncEndpoints:
     @pytest.mark.asyncio
     async def test_async_root_endpoint(self):
         """Test root endpoint using async client."""
-        async with AsyncClient(app=app, base_url="http://test") as ac:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
             response = await ac.get("/")
         
         assert response.status_code == 200
@@ -20,7 +22,8 @@ class TestAsyncEndpoints:
     @pytest.mark.asyncio
     async def test_async_get_swatch_config_all(self):
         """Test get_swatch_config endpoint without filter using async client."""
-        async with AsyncClient(app=app, base_url="http://test") as ac:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
             response = await ac.get("/get_swatch_config")
         
         assert response.status_code == 200
@@ -31,7 +34,8 @@ class TestAsyncEndpoints:
     @pytest.mark.asyncio
     async def test_async_get_swatch_config_with_filter(self):
         """Test get_swatch_config endpoint with filter using async client."""
-        async with AsyncClient(app=app, base_url="http://test") as ac:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
             response = await ac.get("/get_swatch_config?colorName=DIELINE")
         
         assert response.status_code == 200
@@ -42,7 +46,8 @@ class TestAsyncEndpoints:
     @pytest.mark.asyncio
     async def test_async_get_swatch_config_not_found(self):
         """Test get_swatch_config endpoint with invalid color name using async client."""
-        async with AsyncClient(app=app, base_url="http://test") as ac:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
             response = await ac.get("/get_swatch_config?colorName=INVALID")
         
         assert response.status_code == 404
@@ -57,7 +62,8 @@ class TestIntegrationScenarios:
     @pytest.mark.asyncio
     async def test_complete_workflow_scenario(self):
         """Test a complete workflow: check API info, then query specific swatch."""
-        async with AsyncClient(app=app, base_url="http://test") as ac:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
             # First, check if API is available
             root_response = await ac.get("/")
             assert root_response.status_code == 200

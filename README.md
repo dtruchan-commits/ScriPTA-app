@@ -82,7 +82,7 @@ GET /get_swatch_config?colorname=DIELINE
       "colorName": "DIELINE",
       "colorModel": "SPOT",
       "colorSpace": "CMYK",
-      "colorValues": "0,50,100,0"
+      "colorValues": [0, 50, 100, 0]
     }
   ]
 }
@@ -96,19 +96,19 @@ GET /get_swatch_config?colorname=DIELINE
       "colorName": "DIELINE",
       "colorModel": "SPOT",
       "colorSpace": "CMYK",
-      "colorValues": "0,50,100,0"
+      "colorValues": [0, 50, 100, 0]
     },
     {
       "colorName": "PA123",
       "colorModel": "SPOT", 
       "colorSpace": "CMYK",
-      "colorValues": "50,50,50,50"
+      "colorValues": [50, 50, 50, 50]
     },
     {
       "colorName": "PA321",
       "colorModel": "PROCESS",
       "colorSpace": "CMYK", 
-      "colorValues": "40,40,40,40"
+      "colorValues": [40, 40, 40, 40]
     }
   ]
 }

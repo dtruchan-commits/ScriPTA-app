@@ -54,6 +54,29 @@ pytest -k "swatch"
 pytest -k "async"
 ```
 
+## API Response Format
+
+The SwatchWorx API returns swatch data with the following structure:
+
+```json
+{
+  "swatches": [
+    {
+      "colorName": "PA123",
+      "colorModel": "SPOT",
+      "colorSpace": "CMYK",
+      "colorValues": [0, 24, 94, 0]
+    }
+  ]
+}
+```
+
+**Key points:**
+- `colorValues` is an array of integers, not a comma-separated string
+- All color values are validated as integers
+- Color models are validated against ["SPOT", "PROCESS"]
+- Color spaces are validated against ["CMYK", "RGB", "LAB"]
+
 ## Test Coverage
 
 ### Main API Tests (`test_main.py`):
@@ -67,7 +90,8 @@ pytest -k "async"
   - Response schema validation
   - Data integrity checks
 - **Edge cases**: Wrong HTTP methods, non-existent endpoints
-- **Data consistency**: Enum validation, color value format
+- **Data consistency**: Enum validation, color value array format
+- **Specific swatch validation**: Tests for known swatches with correct data
 - **Parameterized tests**: Multiple valid/invalid colornames
 
 ### Integration Tests (`test_integration.py`):

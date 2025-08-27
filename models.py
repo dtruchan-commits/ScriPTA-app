@@ -66,7 +66,7 @@ class SwatchConfig(BaseModel):
     color_name: str = Field(..., alias="colorName")
     color_model: ColorModel = Field(..., alias="colorModel")
     color_space: ColorSpace = Field(..., alias="colorSpace")
-    color_values: str = Field(..., alias="colorValues")
+    color_values: List[int] = Field(..., alias="colorValues")
 
 
 class SwatchConfigResponse(BaseModel):

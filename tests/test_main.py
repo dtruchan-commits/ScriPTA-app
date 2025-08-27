@@ -52,7 +52,7 @@ class TestGetSwatchConfigEndpoint:
         assert swatch["colorName"] == "DIELINE"
         assert swatch["colorModel"] == "SPOT"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "50,50,0,0"
+        assert swatch["colorValues"] == [50, 50, 0, 0]
     
     def test_get_swatches_with_another_valid_colorname(self, client):
         """Test filtering by another valid color name."""
@@ -66,7 +66,7 @@ class TestGetSwatchConfigEndpoint:
         assert swatch["colorName"] == "PA123"
         assert swatch["colorModel"] == "SPOT"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "0,24,94,0"
+        assert swatch["colorValues"] == [0, 24, 94, 0]
     
     def test_get_swatches_with_process_color_model(self, client):
         """Test filtering by color name that has PROCESS color model."""
@@ -80,7 +80,7 @@ class TestGetSwatchConfigEndpoint:
         assert swatch["colorName"] == "PA321"
         assert swatch["colorModel"] == "SPOT"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "95,20,25,20"
+        assert swatch["colorValues"] == [95, 20, 25, 20]
     
     def test_get_swatches_with_invalid_colorname_returns_404(self, client):
         """Test that filtering by invalid color name returns 404."""
@@ -129,7 +129,11 @@ class TestGetSwatchConfigEndpoint:
             assert isinstance(swatch["colorName"], str)
             assert isinstance(swatch["colorModel"], str)
             assert isinstance(swatch["colorSpace"], str)
-            assert isinstance(swatch["colorValues"], str)
+            assert isinstance(swatch["colorValues"], list)
+            
+            # Validate that colorValues contains integers
+            for value in swatch["colorValues"]:
+                assert isinstance(value, int)
             
             # Validate enum values
             assert swatch["colorModel"] in ["SPOT", "PROCESS"]
@@ -227,20 +231,19 @@ class TestDataConsistency:
             assert swatch["colorSpace"] in ["CMYK", "RGB", "LAB"]
     
     def test_color_values_format(self, client):
-        """Test that color values are in expected comma-separated format."""
+        """Test that color values are in expected array format."""
         response = client.get("/get_swatch_config")
         data = response.json()
         
         for swatch in data["swatches"]:
             color_values = swatch["colorValues"]
-            # Should be comma-separated values
-            assert isinstance(color_values, str)
-            assert "," in color_values or color_values.isdigit()  # Single value or comma-separated
+            # Should be an array of integers
+            assert isinstance(color_values, list)
+            assert len(color_values) > 0  # Should have at least one value
             
-            # Split and check that all parts are numeric
-            values = color_values.split(",")
-            for value in values:
-                assert value.strip().isdigit(), f"Invalid color value: {value}"
+            # Check that all values are integers
+            for value in color_values:
+                assert isinstance(value, int), f"Invalid color value: {value}"
 
 
 class TestSpecificSwatchData:
@@ -258,7 +261,7 @@ class TestSpecificSwatchData:
         assert swatch["colorName"] == "C20M90Y0K40"
         assert swatch["colorModel"] == "PROCESS"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "20,90,0,40"
+        assert swatch["colorValues"] == [20, 90, 0, 40]
     
     def test_proc699_swatch_present(self, client):
         """Test that PROC699 swatch is present with correct data."""
@@ -272,7 +275,7 @@ class TestSpecificSwatchData:
         assert swatch["colorName"] == "PROC699"
         assert swatch["colorModel"] == "PROCESS"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "0,30,7,0"
+        assert swatch["colorValues"] == [0, 30, 7, 0]
     
     def test_embossing_swatch_present(self, client):
         """Test that EMBOSSING swatch is present with correct data."""
@@ -286,7 +289,7 @@ class TestSpecificSwatchData:
         assert swatch["colorName"] == "EMBOSSING"
         assert swatch["colorModel"] == "SPOT"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "70,0,70,0"
+        assert swatch["colorValues"] == [70, 0, 70, 0]
     
     def test_not_printable_swatch_present(self, client):
         """Test that NOT_PRINTABLE swatch is present with correct data."""
@@ -300,7 +303,7 @@ class TestSpecificSwatchData:
         assert swatch["colorName"] == "NOT_PRINTABLE"
         assert swatch["colorModel"] == "SPOT"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "0,100,0,0"
+        assert swatch["colorValues"] == [0, 100, 0, 0]
     
     def test_pa301_swatch_present(self, client):
         """Test that PA301 swatch is present with correct data."""
@@ -314,7 +317,7 @@ class TestSpecificSwatchData:
         assert swatch["colorName"] == "PA301"
         assert swatch["colorModel"] == "SPOT"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "100,45,0,18"
+        assert swatch["colorValues"] == [100, 45, 0, 18]
     
     def test_pa520_swatch_present(self, client):
         """Test that PA520 swatch is present with correct data."""
@@ -328,7 +331,7 @@ class TestSpecificSwatchData:
         assert swatch["colorName"] == "PA520"
         assert swatch["colorModel"] == "SPOT"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "69,94,18,0"
+        assert swatch["colorValues"] == [69, 94, 18, 0]
     
     def test_paprocyan_swatch_present(self, client):
         """Test that PAPROCYAN swatch is present with correct data."""
@@ -342,7 +345,7 @@ class TestSpecificSwatchData:
         assert swatch["colorName"] == "PAPROCYAN"
         assert swatch["colorModel"] == "SPOT"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "100,0,0,0"
+        assert swatch["colorValues"] == [100, 0, 0, 0]
     
     def test_white_opaque_swatch_present(self, client):
         """Test that WHITE_OPAQUE swatch is present with correct data."""
@@ -356,7 +359,7 @@ class TestSpecificSwatchData:
         assert swatch["colorName"] == "WHITE_OPAQUE"
         assert swatch["colorModel"] == "SPOT"
         assert swatch["colorSpace"] == "CMYK"
-        assert swatch["colorValues"] == "27,4,0,0"
+        assert swatch["colorValues"] == [27, 4, 0, 0]
     
     def test_all_required_swatches_present(self, client):
         """Test that all required swatches are present in the data."""

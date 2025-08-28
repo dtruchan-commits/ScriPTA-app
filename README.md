@@ -1,15 +1,16 @@
 # SwatchWorx API
 
-A simple FastAPI backend application that provides swatch configuration data.
-
+![alt text](image.png)
+A FastAPI Backend Application that provides Swatch and Layer Configurations to be used in InDesign Scripts.
 ## Features
 
 - FastAPI backend with basic type safety using Pydantic models
-- `/get_swatch_config` endpoint that returns swatch configuration data
+- Endpoints that returns swatch and layer configuration data
 - Optional filtering by colorname parameter
 - Basic error handling for non-existent colornames
 - Type definitions using Enums for Color Model and Color Space
 - JSON response format with structured data
+- Connection example for Adobe InDesign's ExtendScript
 
 ## Installation
 
@@ -131,3 +132,41 @@ swatchworx-app/
 ## Implementation Notes
 
 This is a basic implementation that currently uses hardcoded swatch data. The filtering functionality works by matching the exact colorname provided in the query parameter. Error handling is minimal but functional for the current use case.
+
+
+## Frontend Test Tool
+
+The SwatchWorx API includes an ExtendScript-based connection tool that allows Adobe InDesign users to test API connectivity directly from the InDesign environment.
+
+### Overview
+
+This tool provides a simple UI for testing HTTP connections from InDesign to the FastAPI backend running locally or on a network server. It demonstrates how InDesign can communicate with external web services using ExtendScript's Socket functionality.
+
+### Installation
+
+1. Save the `frontend.jsx` script to your InDesign Scripts folder:
+   ```
+   C:\Users\{USERNAME}\AppData\Roaming\Adobe\InDesign\Version 20.0\de_DE\Scripts\Scripts Panel
+   ```
+   
+2. In InDesign, access the script from:
+   - German UI: Fenster > Hilfsprogramme > Skripte
+   - English UI: Window > Utilities > Scripts
+
+### Using the Test Tool
+
+1. Launch the script from InDesign's Scripts panel
+2. Configure connection settings:
+   - Host: Default is `127.0.0.1` for local development
+   - Port: Default is `8000` for the FastAPI development server
+   - Path: The API endpoint to test, including query parameters
+   
+3. Example paths to test:
+   ```
+   /get_swatch_config                    # Get all swatches
+   /get_swatch_config?colorName=PA123    # Get specific swatch
+   /get_layer_config?configName=default  # Get layer configuration
+   ```
+
+4. Click "Test Connection" to execute the request and view results
+![Example API Call](frontend.png)

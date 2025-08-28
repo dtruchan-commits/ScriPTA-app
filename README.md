@@ -5,11 +5,9 @@ A FastAPI Backend Application that provides Swatch and Layer Configurations to b
 ## Features
 
 - FastAPI backend with basic type safety using Pydantic models
-- Endpoints that returns swatch and layer configuration data
-- Optional filtering by colorname parameter
-- Basic error handling for non-existent colornames
+- Endpoints that return swatch and layer configurations
+- Optional filtering by color name parameter
 - Type definitions using Enums for Color Model and Color Space
-- JSON response format with structured data
 - Connection example for Adobe InDesign's ExtendScript
 
 ## Installation
@@ -115,8 +113,8 @@ GET /get_swatch_config?colorname=DIELINE
 }
 ```
 
-**Error handling:**
-- Returns 404 status code with error message if colorname is not found
+**Swagger Docs**
+- Go to localhost:8000/docs for complete API Documentation
 
 ## Project Structure
 
@@ -129,12 +127,8 @@ swatchworx-app/
 └── README.md       # Documentation
 ```
 
-## Implementation Notes
 
-This is a basic implementation that currently uses hardcoded swatch data. The filtering functionality works by matching the exact colorname provided in the query parameter. Error handling is minimal but functional for the current use case.
-
-
-## Frontend Test Tool
+## Frontend Connection Example for ExtendScript
 
 The SwatchWorx API includes an ExtendScript-based connection tool that allows Adobe InDesign users to test API connectivity directly from the InDesign environment.
 

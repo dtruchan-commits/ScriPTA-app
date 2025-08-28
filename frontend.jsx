@@ -17,7 +17,7 @@ var dialog = new Window("dialog", "SwatchWorx Frontend Connection Tester");
 dialog.orientation = "column";
 dialog.alignChildren = ["fill", "top"];
 dialog.preferredSize.width = 500;
-dialog.preferredSize.height = 800;
+dialog.preferredSize.height = 500;
 
 // Settings panel
 var settingsPanel = dialog.add("panel", undefined, "Connection Settings");

@@ -44,7 +44,7 @@ pip install black isort flake8 mypy
 
 1. Start the development server:
 ```bash
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 2. Access the API:

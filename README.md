@@ -116,15 +116,24 @@ GET /get_swatch_config?colorname=DIELINE
 **Swagger Docs**
 - Go to localhost:8000/docs for complete API Documentation
 
+## Database
+
+The application uses SQLite to store swatch and layer configuration data:
+
+![Database Schema](README_db.png)
+
 ## Project Structure
 
 ```
 scripta-app/
-├── main.py          # FastAPI application and endpoints
-├── models.py        # Pydantic models and type definitions  
-├── data.py          # Sample swatch data
-├── requirements.txt # Python dependencies
-└── README.md       # Documentation
+├── main.py              # FastAPI application and endpoints
+├── models.py            # Pydantic models and type definitions  
+├── data/
+│   ├── layers.py        # Layer data management
+│   └── swatches.py      # Swatch data management
+├── scripta-db.sqlite3   # SQLite database
+├── requirements.txt     # Python dependencies
+└── README.md           # Documentation
 ```
 
 
@@ -140,7 +149,7 @@ This tool provides a simple UI for testing HTTP connections from InDesign to the
 
 1. Save the `frontend.jsx` script to your InDesign Scripts folder:
    ```
-   C:\Users\{USERNAME}\AppData\Roaming\Adobe\InDesign\Version 20.0\de_DE\Scripts\Scripts Panel
+   C:\Users\{CWID}\AppData\Roaming\Adobe\InDesign\Version 20.0\de_DE\Scripts\Scripts Panel
    ```
    
 2. In InDesign, access the script from:
@@ -163,4 +172,3 @@ This tool provides a simple UI for testing HTTP connections from InDesign to the
    ```
 
 4. Click "Test Connection" to execute the request and view results
-![Example API Call](frontend.png)

@@ -1,6 +1,6 @@
 # ScriPTA API
 
-![alt text](image.png)
+![alt text](README_ScriPTA_project_banner.png)
 A FastAPI Backend Application that provides Swatch and Layer Configurations to be used in InDesign Scripts.
 ## Features
 

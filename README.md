@@ -129,9 +129,9 @@ scripta-app/
 ├── main.py              # FastAPI application and endpoints
 ├── models.py            # Pydantic models and type definitions  
 ├── data/
-│   ├── layers.py        # Layer data management
-│   └── swatches.py      # Swatch data management
-├── scripta-db.sqlite3   # SQLite database
+│   ├── layers.py        # Layer data management (don't update here!)
+│   └── swatches.py      # Swatch data management (don't update here!)
+├── scripta-db.sqlite3   # SQLite database (update data here)
 ├── requirements.txt     # Python dependencies
 └── README.md           # Documentation
 ```

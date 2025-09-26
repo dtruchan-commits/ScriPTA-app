@@ -1,4 +1,4 @@
-# SwatchWorx API
+# ScriPTA API
 
 ![alt text](image.png)
 A FastAPI Backend Application that provides Swatch and Layer Configurations to be used in InDesign Scripts.

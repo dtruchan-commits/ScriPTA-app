@@ -17,7 +17,7 @@ class TestAsyncEndpoints:
             response = await ac.get("/")
         
         assert response.status_code == 200
-        assert response.json() == {"message": "SwatchWorx API", "version": "1.0.0"}
+        assert response.json() == {"message": "ScriPTA", "version": "1.0.0"}
     
     @pytest.mark.asyncio
     async def test_async_get_swatch_config_all(self):

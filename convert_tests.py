@@ -2,7 +2,7 @@
 import re
 
 # Read the current test_main.py file
-with open('/workspaces/swatchworx-app/tests/test_main.py', 'r') as f:
+with open('/workspaces/scripta-app/tests/test_main.py', 'r') as f:
     content = f.read()
 
 # Dictionary to map string values to array values
@@ -56,7 +56,7 @@ new_color_values_test = '''            color_values = swatch["colorValues"]
 new_content = new_content.replace(old_color_values_test, new_color_values_test)
 
 # Write back to the file
-with open('/workspaces/swatchworx-app/tests/test_main.py', 'w') as f:
+with open('/workspaces/scripta-app/tests/test_main.py', 'w') as f:
     f.write(new_content)
 
 print("Successfully updated test file to expect arrays instead of strings!")

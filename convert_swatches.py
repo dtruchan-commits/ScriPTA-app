@@ -2,7 +2,7 @@
 import re
 
 # Read the current swatches.py file
-with open('/workspaces/swatchworx-app/data/swatches.py', 'r') as f:
+with open('/workspaces/scripta-app/data/swatches.py', 'r') as f:
     content = f.read()
 
 # Use regex to find and replace color_values strings with lists
@@ -20,7 +20,7 @@ def replace_color_values(match):
 new_content = re.sub(pattern, replace_color_values, content)
 
 # Write back to the file
-with open('/workspaces/swatchworx-app/data/swatches.py', 'w') as f:
+with open('/workspaces/scripta-app/data/swatches.py', 'w') as f:
     f.write(new_content)
 
 print("Successfully converted all color_values from strings to lists!")

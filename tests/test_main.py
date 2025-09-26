@@ -13,7 +13,7 @@ class TestRootEndpoint:
         """Test that root endpoint returns expected message and version."""
         response = client.get("/")
         assert response.status_code == 200
-        assert response.json() == {"message": "SwatchWorx API", "version": "1.0.0"}
+        assert response.json() == {"message": "ScriPTA", "version": "1.0.0"}
     
     def test_root_endpoint_content_type(self, client):
         """Test that root endpoint returns JSON content type."""

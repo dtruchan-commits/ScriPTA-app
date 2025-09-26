@@ -14,9 +14,9 @@ from models import (
 )
 
 app = FastAPI(
-    title="SwatchWorx API",
-    description="API for managing swatch configurations",
-    version="1.0.0"
+    title="ScriPTA",
+    description="REST API for managing Technical Packaging Material Data and InDesign Swatch and Layer Configurations",
+    version="1.0.1"
 )
 
 
@@ -102,7 +102,7 @@ async def get_layer_config(config_name: Optional[str] = Query(None, description=
 @app.get("/")
 async def root():
     """Root endpoint with basic API information."""
-    return {"message": "SwatchWorx API", "version": "1.0.0"}
+    return {"message": "ScriPTA", "version": "1.0.0"}
 
 
 if __name__ == "__main__":

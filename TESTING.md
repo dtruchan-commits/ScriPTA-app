@@ -1,6 +1,6 @@
-# Testing Guide for SwatchWorx API
+# Testing Guide for ScriPTA API
 
-This guide explains how to run tests for the SwatchWorx FastAPI application.
+This guide explains how to run tests for the ScriPTA FastAPI application.
 
 ## Setup
 
@@ -11,7 +11,7 @@ This guide explains how to run tests for the SwatchWorx FastAPI application.
 
 2. **Project structure**:
    ```
-   /workspaces/swatchworx-app/
+   /workspaces/scripta-app/
    ├── main.py              # FastAPI application
    ├── models.py            # Pydantic models
    ├── data.py             # Test data
@@ -56,7 +56,7 @@ pytest -k "async"
 
 ## API Response Format
 
-The SwatchWorx API returns swatch data with the following structure:
+The ScriPTA API returns swatch data with the following structure:
 
 ```json
 {

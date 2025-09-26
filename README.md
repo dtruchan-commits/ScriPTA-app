@@ -15,8 +15,8 @@ A FastAPI Backend Application that provides Swatch and Layer Configurations to b
 1. Set up conda environment:
 ```bash
 conda init
-conda create -n swa python=3.12
-conda activate swa
+conda create -n scripta python=3.12
+conda activate scripta
 ```
 
 2. Install dependencies:
@@ -119,7 +119,7 @@ GET /get_swatch_config?colorname=DIELINE
 ## Project Structure
 
 ```
-swatchworx-app/
+scripta-app/
 ├── main.py          # FastAPI application and endpoints
 ├── models.py        # Pydantic models and type definitions  
 ├── data.py          # Sample swatch data
@@ -130,7 +130,7 @@ swatchworx-app/
 
 ## Frontend Connection Example for ExtendScript
 
-The SwatchWorx API includes an ExtendScript-based connection tool that allows Adobe InDesign users to test API connectivity directly from the InDesign environment.
+The ScriPTA API includes an ExtendScript-based connection tool that allows Adobe InDesign users to test API connectivity directly from the InDesign environment.
 
 ### Overview
 

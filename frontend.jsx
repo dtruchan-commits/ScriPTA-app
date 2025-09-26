@@ -13,7 +13,7 @@ function encodeURIComponent(str) {
 }
 
 // Create a basic UI
-var dialog = new Window("dialog", "SwatchWorx Frontend Connection Tester");
+var dialog = new Window("dialog", "ScriPTA Frontend Connection Tester");
 dialog.orientation = "column";
 dialog.alignChildren = ["fill", "top"];
 dialog.preferredSize.width = 500;

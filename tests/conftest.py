@@ -1,5 +1,5 @@
 """
-Pytest configuration and shared fixtures for SwatchWorx API tests.
+Pytest configuration and shared fixtures for ScriPTA tests.
 """
 
 import pytest

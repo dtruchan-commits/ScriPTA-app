@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -103,24 +103,24 @@ class TPMConfig(BaseModel):
     
     id: int
     tpm: str = Field(..., alias="TPM", description="TPM name")
-    draw_dieline: str = Field(None, alias="drawDieline", description="Draw dieline value")
-    draw_combination: str = Field(None, alias="drawCombination", description="Draw combination value")
-    a: int = Field(None, description="Dimension A")
-    b: int = Field(None, description="Dimension B")
-    h: int = Field(None, description="Dimension H")
-    variant: str = Field(None, description="Variant name")
+    draw_dieline: Optional[str] = Field(None, alias="drawDieline", description="Draw dieline value")
+    draw_combination: Optional[str] = Field(None, alias="drawCombination", description="Draw combination value")
+    a: Optional[int] = Field(None, description="Dimension A")
+    b: Optional[int] = Field(None, description="Dimension B")
+    h: Optional[int] = Field(None, description="Dimension H")
+    variant: Optional[str] = Field(None, description="Variant name")
     version: int = Field(1, description="Version number")
-    variables_list: str = Field(None, alias="variablesList", description="Variables list")
-    created_by: str = Field(None, alias="createdBy", description="Created by user")
-    created_at: str = Field(None, alias="createdAt", description="Creation date")
-    modified_by: str = Field(None, alias="modifiedBy", description="Modified by user")
-    modified_at: str = Field(None, alias="modifiedAt", description="Modification date")
-    pack_type: str = Field(None, alias="packType", description="Pack type")
-    description: str = Field(None, description="Description")
-    comment: str = Field(None, description="Comment")
-    panel_list: str = Field(None, alias="panelList", description="Panel list as JSON string")
-    created_timestamp: str = Field(None, alias="createdTimestamp", description="Created timestamp")
-    updated_timestamp: str = Field(None, alias="updatedTimestamp", description="Updated timestamp")
+    variables_list: Optional[str] = Field(None, alias="variablesList", description="Variables list")
+    created_by: Optional[str] = Field(None, alias="createdBy", description="Created by user")
+    created_at: Optional[str] = Field(None, alias="createdAt", description="Creation date")
+    modified_by: Optional[str] = Field(None, alias="modifiedBy", description="Modified by user")
+    modified_at: Optional[str] = Field(None, alias="modifiedAt", description="Modification date")
+    pack_type: Optional[str] = Field(None, alias="packType", description="Pack type")
+    description: Optional[str] = Field(None, description="Description")
+    comment: Optional[str] = Field(None, description="Comment")
+    panel_list: Optional[str] = Field(None, alias="panelList", description="Panel list as JSON string")
+    created_timestamp: Optional[str] = Field(None, alias="createdTimestamp", description="Created timestamp")
+    updated_timestamp: Optional[str] = Field(None, alias="updatedTimestamp", description="Updated timestamp")
 
 
 class TPMConfigResponse(BaseModel):

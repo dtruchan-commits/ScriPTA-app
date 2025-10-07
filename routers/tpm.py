@@ -2,8 +2,10 @@
 TPM configuration endpoints for the ScriPTA API.
 """
 from typing import Optional
+import logging
 
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import ValidationError
 
 from models.models import TPMConfigResponse
 from routers.database import get_tpms_from_db
@@ -40,10 +42,19 @@ async def get_tpm_config(tpm_name: Optional[str] = Query(None, description="Filt
     - updatedTimestamp: Updated timestamp
     """
     
-    # Get TPM data from database
-    tpms = get_tpms_from_db(tpm_name)
+    try:
+        # Get TPM data from database
+        tpms = get_tpms_from_db(tpm_name)
+        
+        if tpm_name and not tpms:
+            raise HTTPException(status_code=404, detail=f"TPM name '{tpm_name}' not found")
+        
+        return TPMConfigResponse(tpms=tpms)
     
-    if tpm_name and not tpms:
-        raise HTTPException(status_code=404, detail=f"TPM name '{tpm_name}' not found")
+    except ValidationError as e:
+        logging.error(f"Validation error when processing TPM data: {e}")
+        raise HTTPException(status_code=422, detail=f"Data validation error: {str(e)}")
     
-    return TPMConfigResponse(tpms=tpms)
+    except Exception as e:
+        logging.error(f"Unexpected error in get_tpm_config: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error while retrieving TPM configuration")

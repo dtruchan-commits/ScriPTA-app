@@ -2,11 +2,13 @@
 Database utility functions for ScriPTA API.
 """
 import json
+import logging
 import os
 import sqlite3
 from typing import List, Optional
 
 from fastapi import HTTPException
+from pydantic import ValidationError
 
 from models.models import (
     ColorModel,
@@ -154,29 +156,37 @@ def get_tpms_from_db(tpm_name: Optional[str] = None) -> List[TPMConfig]:
         tpms = []
         
         for row in rows:
-            tpm = TPMConfig(
-                id=row[0],
-                tpm=row[1],
-                draw_dieline=row[2],
-                draw_combination=row[3],
-                a=row[4],
-                b=row[5],
-                h=row[6],
-                variant=row[7],
-                version=row[8],
-                variables_list=row[9],
-                created_by=row[10],
-                created_at=row[11],
-                modified_by=row[12],
-                modified_at=row[13],
-                pack_type=row[14],
-                description=row[15],
-                comment=row[16],
-                panel_list=row[17],
-                created_timestamp=row[18],
-                updated_timestamp=row[19]
-            )
-            tpms.append(tpm)
+            try:
+                tpm = TPMConfig(
+                    id=row[0],
+                    tpm=row[1],
+                    draw_dieline=row[2],
+                    draw_combination=row[3],
+                    a=row[4],
+                    b=row[5],
+                    h=row[6],
+                    variant=row[7],
+                    version=row[8],
+                    variables_list=row[9],
+                    created_by=row[10],
+                    created_at=row[11],
+                    modified_by=row[12],
+                    modified_at=row[13],
+                    pack_type=row[14],
+                    description=row[15],
+                    comment=row[16],
+                    panel_list=row[17],
+                    created_timestamp=row[18],
+                    updated_timestamp=row[19]
+                )
+                tpms.append(tpm)
+            except ValidationError as e:
+                logging.error(f"Validation error for TPM record {row[0]} ('{row[1]}'): {e}")
+                # Skip this record and continue with the next one
+                continue
+            except Exception as e:
+                logging.error(f"Unexpected error processing TPM record {row[0] if row else 'unknown'}: {e}")
+                continue
         
         return tpms
     finally:

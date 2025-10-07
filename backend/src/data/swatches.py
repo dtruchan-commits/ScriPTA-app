@@ -1,6 +1,6 @@
-from models.models import SwatchConfig, ColorModel, ColorSpace
 from typing import List
 
+from ..models.models import ColorModel, ColorSpace, SwatchConfig
 
 SWATCH_DATA = [
     SwatchConfig(

@@ -5,8 +5,8 @@ from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
-from models.models import LayerConfigSetResponse
-from routers.database import get_layer_configs_from_db
+from ..models.models import LayerConfigSetResponse
+from .database import get_layer_configs_from_db
 
 router = APIRouter()
 

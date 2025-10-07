@@ -3,7 +3,7 @@ import pytest_asyncio
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-from main import app
+from ..main import app
 
 
 class TestAsyncEndpoints:

@@ -4,7 +4,8 @@ Pytest configuration and shared fixtures for ScriPTA tests.
 
 import pytest
 from fastapi.testclient import TestClient
-from main import app
+
+from ..main import app
 
 
 @pytest.fixture

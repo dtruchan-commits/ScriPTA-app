@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-
-from routers import layers, masterdata, swatches, tpm, utility
+from src.routers import layers, masterdata, swatches, tpm, utility
 
 app = FastAPI(
     title="ScriPTA",

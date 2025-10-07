@@ -3,10 +3,12 @@ Tests specifically for the layer config endpoint (/get_layer_config).
 This module contains comprehensive tests for the layer configuration API endpoint.
 """
 
-import pytest
 import time
-from main import app
-from data.layers import LAYER_DATA
+
+import pytest
+
+from ..main import app
+from ..src.data.layers import LAYER_DATA
 
 
 class TestGetLayerConfigEndpoint:

@@ -1,8 +1,8 @@
 import pytest
 
-from data.layers import LAYER_DATA
-from data.swatches import SWATCH_DATA
-from models.models import ColorModel, ColorSpace, SwatchConfig
+from ..src.data.layers import LAYER_DATA
+from ..src.data.swatches import SWATCH_DATA
+from ..src.models.models import ColorModel, ColorSpace, SwatchConfig
 
 
 class TestRootEndpoint:

@@ -10,7 +10,7 @@ from typing import Dict, List, Optional
 from fastapi import HTTPException
 from pydantic import ValidationError
 
-from models.models import (
+from ..models.models import (
     ColorModel,
     ColorSpace,
     LayerConfigResponse,
@@ -21,7 +21,7 @@ from models.models import (
 )
 
 # Database configuration
-DB_PATH = "scripta-db.sqlite3"
+DB_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "scripta-db.sqlite3")
 
 
 def get_db_connection():

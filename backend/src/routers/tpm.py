@@ -7,8 +7,8 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import ValidationError
 
-from models.models import TPMConfigResponse
-from routers.database import get_tpms_from_db
+from ..models.models import TPMConfigResponse
+from .database import get_tpms_from_db
 
 router = APIRouter()
 

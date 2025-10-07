@@ -5,8 +5,8 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
-from models.models import MasterdataConfigResponse
-from routers.database import get_masterdata_from_db
+from ..models.models import MasterdataConfigResponse
+from .database import get_masterdata_from_db
 
 router = APIRouter()
 

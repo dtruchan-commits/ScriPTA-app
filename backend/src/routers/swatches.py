@@ -5,8 +5,8 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
-from models.models import SwatchConfigResponse
-from routers.database import get_swatches_from_db
+from ..models.models import SwatchConfigResponse
+from .database import get_swatches_from_db
 
 router = APIRouter()
 

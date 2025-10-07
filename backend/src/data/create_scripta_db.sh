@@ -68,8 +68,8 @@ import os
 # Add the current directory to the Python path so we can import our modules
 sys.path.insert(0, os.getcwd())
 
-from data.layers import LAYER_DATA
-from data.swatches import SWATCH_DATA
+from layers import LAYER_DATA
+from swatches import SWATCH_DATA
 
 def populate_database(db_path):
     conn = sqlite3.connect(db_path)

@@ -10,6 +10,21 @@ A FastAPI Backend Application that provides Swatch and Layer Configurations to b
 - Type definitions using Enums for Color Model and Color Space
 - Connection example for Adobe InDesign's ExtendScript
 
+## Project Structure
+
+```
+ScriPTA-app/
+├── backend/              # FastAPI backend application
+│   ├── src/             # Source code
+│   │   ├── routers/     # API route handlers
+│   │   ├── models/      # Pydantic models
+│   │   └── data/        # Data configuration
+│   ├── tests/           # Test files
+│   └── main.py          # Application entry point
+├── frontend.jsx         # Frontend component (to be moved to frontend/)
+└── README_images/       # Documentation images
+```
+
 ## Installation
 
 1. Set up conda environment:
@@ -19,8 +34,9 @@ conda create -n scripta python=3.12
 conda activate scripta
 ```
 
-2. Install dependencies:
+2. Navigate to backend and install dependencies:
 ```bash
+cd backend
 pip install -r requirements.txt
 ```
 
@@ -42,9 +58,16 @@ pip install black isort flake8 mypy
 
 ## Running the Application
 
-1. Start the development server:
+1. Navigate to the backend directory and start the development server:
 ```bash
+cd backend
 python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Or simply:
+```bash
+cd backend
+python main.py
 ```
 
 2. Access the API:
@@ -124,16 +147,30 @@ The application uses SQLite to store swatch and layer configuration data:
 
 ## Project Structure
 
+## Testing
+
+Run tests from the backend directory:
+```bash
+cd backend
+pytest
 ```
-scripta-app/
-├── main.py              # FastAPI application and endpoints
-├── models.py            # Pydantic models and type definitions  
-├── data/
-│   ├── layers.py        # Layer data management (don't update here!)
-│   └── swatches.py      # Swatch data management (don't update here!)
+
+## Legacy File Structure (Updated)
+
+The new structure organizes files better:
+```
+backend/
+├── main.py              # FastAPI application entry point
+├── src/
+│   ├── models/
+│   │   └── models.py    # Pydantic models and type definitions  
+│   ├── routers/         # API endpoint handlers
+│   └── data/
+│       ├── layers.py    # Layer data management (don't update here!)
+│       └── swatches.py  # Swatch data management (don't update here!)
 ├── scripta-db.sqlite3   # SQLite database (update data here)
 ├── requirements.txt     # Python dependencies
-└── README.md           # Documentation
+└── tests/              # Test files
 ```
 
 

@@ -3,7 +3,7 @@ import pytest
 from data.layers import LAYER_DATA
 from data.swatches import SWATCH_DATA
 from main import app
-from models import ColorModel, ColorSpace, SwatchConfig
+from models.models import ColorModel, ColorSpace, SwatchConfig
 
 
 class TestRootEndpoint:

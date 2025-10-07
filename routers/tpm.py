@@ -5,7 +5,7 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
-from models import TPMConfigResponse
+from models.models import TPMConfigResponse
 from routers.database import get_tpms_from_db
 
 router = APIRouter()

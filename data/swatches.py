@@ -1,4 +1,4 @@
-from models import SwatchConfig, ColorModel, ColorSpace
+from models.models import SwatchConfig, ColorModel, ColorSpace
 from typing import List
 
 

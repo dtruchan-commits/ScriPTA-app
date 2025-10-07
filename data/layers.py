@@ -1,4 +1,4 @@
-from models import LayerConfig, LayerConfigSet, LayerName, LayerColor
+from models.models import LayerConfig, LayerConfigSet, LayerName, LayerColor
 
 
 LAYER_DATA = [

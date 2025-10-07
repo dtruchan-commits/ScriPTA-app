@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from fastapi import HTTPException
 
-from models import (
+from models.models import (
     ColorModel,
     ColorSpace,
     LayerConfigResponse,

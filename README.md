@@ -1,6 +1,6 @@
 # ScriPTA API
 
-![alt text](README_ScriPTA_project_banner.png)
+![alt text](README_images/README_ScriPTA_project_banner.png)
 A FastAPI Backend Application that provides Swatch and Layer Configurations to be used in InDesign Scripts.
 ## Features
 
@@ -120,7 +120,7 @@ GET /get_swatch_config?colorname=DIELINE
 
 The application uses SQLite to store swatch and layer configuration data:
 
-![Database Schema](README_db.png)
+![Database Schema](README_images/README_db.png)
 
 ## Project Structure
 

@@ -5,7 +5,7 @@ import json
 import logging
 import os
 import sqlite3
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from fastapi import HTTPException
 from pydantic import ValidationError
@@ -38,14 +38,14 @@ def get_swatches_from_db(color_name: Optional[str] = None) -> List[SwatchConfig]
 
         if color_name:
             query = """
-                SELECT color_name, color_model, color_space, color_values 
+                SELECT color_name, color_model, color_space, color_values
                 FROM swatches
                 WHERE color_name = ?
             """
             cursor.execute(query, (color_name,))
         else:
             query = """
-                SELECT color_name, color_model, color_space, color_values 
+                SELECT color_name, color_model, color_space, color_values
                 FROM swatches
                 ORDER BY color_name
             """
@@ -57,10 +57,10 @@ def get_swatches_from_db(color_name: Optional[str] = None) -> List[SwatchConfig]
         for row in rows:
             color_values = json.loads(row[3])  # Parse JSON string to list
             swatch = SwatchConfig(
-                color_name=row[0],
-                color_model=ColorModel(row[1]),
-                color_space=ColorSpace(row[2]),
-                color_values=color_values
+                colorName=row[0],
+                colorModel=ColorModel(row[1]),
+                colorSpace=ColorSpace(row[2]),
+                colorValues=color_values
             )
             swatches.append(swatch)
 
@@ -96,7 +96,7 @@ def get_layer_configs_from_db(config_name: Optional[str] = None) -> List[LayerCo
         rows = cursor.fetchall()
 
         # Group layers by config_name
-        configs_dict = {}
+        configs_dict: Dict[str, List[LayerConfigResponse]] = {}
         for row in rows:
             config_name_db = row[0]
             if config_name_db not in configs_dict:
@@ -115,7 +115,7 @@ def get_layer_configs_from_db(config_name: Optional[str] = None) -> List[LayerCo
         for config_name_key, layers in configs_dict.items():
             response_configs.append(
                 LayerConfigSetResponse(
-                    config_name=config_name_key,
+                    configName=config_name_key,
                     layers=layers
                 )
             )
@@ -133,19 +133,19 @@ def get_tpms_from_db(tpm_name: Optional[str] = None) -> List[TpmConfig]:
 
         if tpm_name:
             query = """
-                SELECT id, TPM, drawDieline, drawCombination, A, B, H, variant, 
-                       version, variablesList, createdBy, createdAt, modifiedBy, 
-                       modifiedAt, packType, description, comment, panelList, 
+                SELECT id, TPM, drawDieline, drawCombination, A, B, H, variant,
+                       version, variablesList, createdBy, createdAt, modifiedBy,
+                       modifiedAt, packType, description, comment, panelList,
                        created_timestamp, updated_timestamp
-                FROM tpm 
+                FROM tpm
                 WHERE TPM = ?
             """
             cursor.execute(query, (tpm_name,))
         else:
             query = """
-                SELECT id, TPM, drawDieline, drawCombination, A, B, H, variant, 
-                       version, variablesList, createdBy, createdAt, modifiedBy, 
-                       modifiedAt, packType, description, comment, panelList, 
+                SELECT id, TPM, drawDieline, drawCombination, A, B, H, variant,
+                       version, variablesList, createdBy, createdAt, modifiedBy,
+                       modifiedAt, packType, description, comment, panelList,
                        created_timestamp, updated_timestamp
                 FROM tpm
                 ORDER BY TPM
@@ -159,25 +159,25 @@ def get_tpms_from_db(tpm_name: Optional[str] = None) -> List[TpmConfig]:
             try:
                 tpm = TpmConfig(
                     id=row[0],
-                    tpm=row[1],
-                    draw_dieline=row[2],
-                    draw_combination=row[3],
-                    a=row[4],
-                    b=row[5],
-                    h=row[6],
+                    TPM=row[1],
+                    drawDieline=row[2],
+                    drawCombination=row[3],
+                    A=row[4],
+                    B=row[5],
+                    H=row[6],
                     variant=row[7],
                     version=row[8],
-                    variables_list=row[9],
-                    created_by=row[10],
-                    created_at=row[11],
-                    modified_by=row[12],
-                    modified_at=row[13],
-                    pack_type=row[14],
+                    variablesList=row[9],
+                    createdBy=row[10],
+                    createdAt=row[11],
+                    modifiedBy=row[12],
+                    modifiedAt=row[13],
+                    packType=row[14],
                     description=row[15],
                     comment=row[16],
-                    panel_list=row[17],
-                    created_timestamp=row[18],
-                    updated_timestamp=row[19]
+                    panelList=row[17],
+                    createdTimestamp=row[18],
+                    updatedTimestamp=row[19]
                 )
                 tpms.append(tpm)
             except ValidationError as e:

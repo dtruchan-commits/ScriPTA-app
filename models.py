@@ -93,3 +93,35 @@ class LayerConfigSetResponse(BaseModel):
     
     config_name: str = Field(..., alias="configName")
     layers: List[LayerConfigResponse]
+
+
+class TPMConfig(BaseModel):
+    model_config = ConfigDict(
+        use_enum_values=True,
+        populate_by_name=True
+    )
+    
+    id: int
+    tpm: str = Field(..., alias="TPM", description="TPM name")
+    draw_dieline: str = Field(None, alias="drawDieline", description="Draw dieline value")
+    draw_combination: str = Field(None, alias="drawCombination", description="Draw combination value")
+    a: int = Field(None, description="Dimension A")
+    b: int = Field(None, description="Dimension B")
+    h: int = Field(None, description="Dimension H")
+    variant: str = Field(None, description="Variant name")
+    version: int = Field(1, description="Version number")
+    variables_list: str = Field(None, alias="variablesList", description="Variables list")
+    created_by: str = Field(None, alias="createdBy", description="Created by user")
+    created_at: str = Field(None, alias="createdAt", description="Creation date")
+    modified_by: str = Field(None, alias="modifiedBy", description="Modified by user")
+    modified_at: str = Field(None, alias="modifiedAt", description="Modification date")
+    pack_type: str = Field(None, alias="packType", description="Pack type")
+    description: str = Field(None, description="Description")
+    comment: str = Field(None, description="Comment")
+    panel_list: str = Field(None, alias="panelList", description="Panel list as JSON string")
+    created_timestamp: str = Field(None, alias="createdTimestamp", description="Created timestamp")
+    updated_timestamp: str = Field(None, alias="updatedTimestamp", description="Updated timestamp")
+
+
+class TPMConfigResponse(BaseModel):
+    tpms: List[TPMConfig]

@@ -1,9 +1,9 @@
 """
 Database utility functions for ScriPTA API.
 """
-import sqlite3
 import json
 import os
+import sqlite3
 from typing import List, Optional
 
 from fastapi import HTTPException
@@ -14,6 +14,7 @@ from models import (
     LayerConfigResponse,
     LayerConfigSetResponse,
     SwatchConfig,
+    TPMConfig,
 )
 
 # Database configuration
@@ -118,5 +119,65 @@ def get_layer_configs_from_db(config_name: Optional[str] = None) -> List[LayerCo
             )
         
         return response_configs
+    finally:
+        conn.close()
+
+
+def get_tpms_from_db(tpm_name: Optional[str] = None) -> List[TPMConfig]:
+    """Retrieve TPM configurations from the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        if tpm_name:
+            query = """
+                SELECT id, TPM, drawDieline, drawCombination, A, B, H, variant, 
+                       version, variablesList, createdBy, createdAt, modifiedBy, 
+                       modifiedAt, packType, description, comment, panelList, 
+                       created_timestamp, updated_timestamp
+                FROM tpm 
+                WHERE TPM = ?
+            """
+            cursor.execute(query, (tpm_name,))
+        else:
+            query = """
+                SELECT id, TPM, drawDieline, drawCombination, A, B, H, variant, 
+                       version, variablesList, createdBy, createdAt, modifiedBy, 
+                       modifiedAt, packType, description, comment, panelList, 
+                       created_timestamp, updated_timestamp
+                FROM tpm
+                ORDER BY TPM
+            """
+            cursor.execute(query)
+        
+        rows = cursor.fetchall()
+        tpms = []
+        
+        for row in rows:
+            tpm = TPMConfig(
+                id=row[0],
+                tpm=row[1],
+                draw_dieline=row[2],
+                draw_combination=row[3],
+                a=row[4],
+                b=row[5],
+                h=row[6],
+                variant=row[7],
+                version=row[8],
+                variables_list=row[9],
+                created_by=row[10],
+                created_at=row[11],
+                modified_by=row[12],
+                modified_at=row[13],
+                pack_type=row[14],
+                description=row[15],
+                comment=row[16],
+                panel_list=row[17],
+                created_timestamp=row[18],
+                updated_timestamp=row[19]
+            )
+            tpms.append(tpm)
+        
+        return tpms
     finally:
         conn.close()

@@ -703,3 +703,86 @@ class TestLayerConfigEndpointEdgeCases:
         
         assert response.status_code == 200
         assert (end_time - start_time) < 1.0  # Should respond within 1 second
+
+
+class TestGetTPMConfigEndpoint:
+    """Tests for the /get_tpm_config endpoint"""
+    
+    def test_get_all_tpms_without_filter(self, client):
+        """Test getting all TPMs when no TPM name filter is provided."""
+        response = client.get("/get_tpm_config")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert "tpms" in data
+        assert isinstance(data["tpms"], list)
+        
+        # If there are TPMs, verify structure
+        if len(data["tpms"]) > 0:
+            first_tpm = data["tpms"][0]
+            assert "id" in first_tpm
+            assert "TPM" in first_tpm
+            assert "drawDieline" in first_tpm
+            assert "drawCombination" in first_tpm
+            assert "A" in first_tpm
+            assert "B" in first_tpm
+            assert "H" in first_tpm
+            assert "variant" in first_tpm
+            assert "version" in first_tpm
+            assert "packType" in first_tpm
+            assert "description" in first_tpm
+            assert "comment" in first_tpm
+            assert "panelList" in first_tpm
+
+    def test_get_tpm_with_valid_tpm_name_filter(self, client):
+        """Test filtering by a valid TPM name."""
+        response = client.get("/get_tpm_config?tpmName=new one two three")
+        assert response.status_code == 200
+        
+        data = response.json()
+        if len(data["tpms"]) > 0:
+            assert len(data["tpms"]) >= 1
+            tpm = data["tpms"][0]
+            assert tpm["TPM"] == "new one two three"
+
+    def test_get_tpm_with_invalid_tpm_name_filter(self, client):
+        """Test filtering by an invalid TPM name."""
+        response = client.get("/get_tpm_config?tpmName=NonExistentTPM")
+        assert response.status_code == 404
+        assert "TPM name 'NonExistentTPM' not found" in response.json()["detail"]
+    
+    def test_get_tpm_config_response_structure(self, client):
+        """Test that the response has the correct structure."""
+        response = client.get("/get_tpm_config")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert isinstance(data, dict)
+        assert "tpms" in data
+        assert isinstance(data["tpms"], list)
+    
+    def test_tpm_config_with_empty_tpm_name(self, client):
+        """Test behavior with empty TPM name parameter."""
+        response = client.get("/get_tpm_config?tpmName=")
+        assert response.status_code == 200
+        # Empty string should return all TPMs (same as no filter)
+        
+    def test_tpm_config_with_special_characters_in_name(self, client):
+        """Test behavior with special characters in TPM name."""
+        special_names = ["tpm@name", "tpm name", "tpm/name", "tpm?name"]
+        
+        for name in special_names:
+            response = client.get(f"/get_tpm_config?tpmName={name}")
+            # Should either return 404 or empty results
+            assert response.status_code in [200, 404]
+    
+    def test_tpm_config_http_methods(self, client):
+        """Test that only GET method is allowed."""
+        response = client.post("/get_tpm_config")
+        assert response.status_code == 405
+        
+        response = client.put("/get_tpm_config")
+        assert response.status_code == 405
+        
+        response = client.delete("/get_tpm_config")
+        assert response.status_code == 405

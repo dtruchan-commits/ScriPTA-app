@@ -1,8 +1,8 @@
 """
 TPM configuration endpoints for the ScriPTA API.
 """
-from typing import Optional
 import logging
+from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import ValidationError
@@ -50,6 +50,10 @@ async def get_tpm_config(tpm_name: Optional[str] = Query(None, description="Filt
             raise HTTPException(status_code=404, detail=f"TPM name '{tpm_name}' not found")
         
         return TPMConfigResponse(tpms=tpms)
+    
+    except HTTPException:
+        # Re-raise HTTPExceptions (like 404) without modification
+        raise
     
     except ValidationError as e:
         logging.error(f"Validation error when processing TPM data: {e}")

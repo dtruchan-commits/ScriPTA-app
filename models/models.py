@@ -62,7 +62,7 @@ class SwatchConfig(BaseModel):
         use_enum_values=True,
         populate_by_name=True
     )
-    
+
     color_name: str = Field(..., alias="colorName", description="Name of the color")
     color_model: ColorModel = Field(..., alias="colorModel", description="Color model: SPOT or PROCESS")
     color_space: ColorSpace = Field(..., alias="colorSpace", description="Color space: CMYK, RGB, or LAB(maybe)")
@@ -78,7 +78,7 @@ class LayerConfigResponse(BaseModel):
         use_enum_values=True,
         populate_by_name=True
     )
-    
+
     name: str
     locked: bool
     print: bool
@@ -90,24 +90,24 @@ class LayerConfigSetResponse(BaseModel):
         use_enum_values=True,
         populate_by_name=True
     )
-    
+
     config_name: str = Field(..., alias="configName")
     layers: List[LayerConfigResponse]
 
 
-class TPMConfig(BaseModel):
+class TpmConfig(BaseModel):
     model_config = ConfigDict(
         use_enum_values=True,
         populate_by_name=True
     )
-    
+
     id: int
     tpm: str = Field(..., alias="TPM", description="TPM name")
     draw_dieline: Optional[str] = Field(None, alias="drawDieline", description="Draw dieline value")
     draw_combination: Optional[str] = Field(None, alias="drawCombination", description="Draw combination value")
-    a: Optional[int] = Field(None, description="Dimension A")
-    b: Optional[int] = Field(None, description="Dimension B")
-    h: Optional[int] = Field(None, description="Dimension H")
+    a: Optional[int] = Field(None, alias="A", description="Dimension A")
+    b: Optional[int] = Field(None, alias="B", description="Dimension B")
+    h: Optional[int] = Field(None, alias="H", description="Dimension H")
     variant: Optional[str] = Field(None, description="Variant name")
     version: int = Field(1, description="Version number")
     variables_list: Optional[str] = Field(None, alias="variablesList", description="Variables list")
@@ -124,4 +124,4 @@ class TPMConfig(BaseModel):
 
 
 class TPMConfigResponse(BaseModel):
-    tpms: List[TPMConfig]
+    tpms: List[TpmConfig]

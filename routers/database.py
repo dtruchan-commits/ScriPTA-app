@@ -16,7 +16,7 @@ from models.models import (
     LayerConfigResponse,
     LayerConfigSetResponse,
     SwatchConfig,
-    TPMConfig,
+    TpmConfig,
 )
 
 # Database configuration
@@ -35,11 +35,11 @@ def get_swatches_from_db(color_name: Optional[str] = None) -> List[SwatchConfig]
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
-        
+
         if color_name:
             query = """
                 SELECT color_name, color_model, color_space, color_values 
-                FROM swatches 
+                FROM swatches
                 WHERE color_name = ?
             """
             cursor.execute(query, (color_name,))
@@ -50,10 +50,10 @@ def get_swatches_from_db(color_name: Optional[str] = None) -> List[SwatchConfig]
                 ORDER BY color_name
             """
             cursor.execute(query)
-        
+
         rows = cursor.fetchall()
         swatches = []
-        
+
         for row in rows:
             color_values = json.loads(row[3])  # Parse JSON string to list
             swatch = SwatchConfig(
@@ -63,7 +63,7 @@ def get_swatches_from_db(color_name: Optional[str] = None) -> List[SwatchConfig]
                 color_values=color_values
             )
             swatches.append(swatch)
-        
+
         return swatches
     finally:
         conn.close()
@@ -74,7 +74,7 @@ def get_layer_configs_from_db(config_name: Optional[str] = None) -> List[LayerCo
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
-        
+
         if config_name:
             query = """
                 SELECT lcs.config_name, lc.name, lc.locked, lc.print, lc.color
@@ -92,16 +92,16 @@ def get_layer_configs_from_db(config_name: Optional[str] = None) -> List[LayerCo
                 ORDER BY lcs.config_name, lc.id
             """
             cursor.execute(query)
-        
+
         rows = cursor.fetchall()
-        
+
         # Group layers by config_name
         configs_dict = {}
         for row in rows:
             config_name_db = row[0]
             if config_name_db not in configs_dict:
                 configs_dict[config_name_db] = []
-            
+
             layer_config = LayerConfigResponse(
                 name=row[1],
                 locked=bool(row[2]),
@@ -109,7 +109,7 @@ def get_layer_configs_from_db(config_name: Optional[str] = None) -> List[LayerCo
                 color=row[4]
             )
             configs_dict[config_name_db].append(layer_config)
-        
+
         # Convert to response format
         response_configs = []
         for config_name_key, layers in configs_dict.items():
@@ -119,18 +119,18 @@ def get_layer_configs_from_db(config_name: Optional[str] = None) -> List[LayerCo
                     layers=layers
                 )
             )
-        
+
         return response_configs
     finally:
         conn.close()
 
 
-def get_tpms_from_db(tpm_name: Optional[str] = None) -> List[TPMConfig]:
+def get_tpms_from_db(tpm_name: Optional[str] = None) -> List[TpmConfig]:
     """Retrieve TPM configurations from the database."""
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
-        
+
         if tpm_name:
             query = """
                 SELECT id, TPM, drawDieline, drawCombination, A, B, H, variant, 
@@ -151,13 +151,13 @@ def get_tpms_from_db(tpm_name: Optional[str] = None) -> List[TPMConfig]:
                 ORDER BY TPM
             """
             cursor.execute(query)
-        
+
         rows = cursor.fetchall()
         tpms = []
-        
+
         for row in rows:
             try:
-                tpm = TPMConfig(
+                tpm = TpmConfig(
                     id=row[0],
                     tpm=row[1],
                     draw_dieline=row[2],
@@ -187,7 +187,7 @@ def get_tpms_from_db(tpm_name: Optional[str] = None) -> List[TPMConfig]:
             except Exception as e:
                 logging.error(f"Unexpected error processing TPM record {row[0] if row else 'unknown'}: {e}")
                 continue
-        
+
         return tpms
     finally:
         conn.close()

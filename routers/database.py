@@ -203,7 +203,7 @@ def get_masterdata_from_db(matnr8: Optional[int] = None) -> List:
         if matnr8:
             query = """
                 SELECT MATNR, MATNR8, MATERIAL_DESCRIPTION, MATERIAL_TYPE, XPLANT_STATUS,
-                       MAKEUP, PLANTS, PLANTS_TXT, PRINCIPLE_TRADENAME, 
+                       MAKEUP, PLANTS, PLANTS_TXT, PRINCIPLE_TRADENAME,
                        CONTRACT_MANUFACTURER_CODETYPE, CONTRACT_MANUFACTURER_CODE,
                        RESPONSIBLE_FOR_SPECIFICATION, CONTRACT_MANUFACTURER_MATERIAL,
                        LAYOUT_APPROVED, USAGE_PREFIX, NUMBER_OF_PAGES, ACF_FLAG,

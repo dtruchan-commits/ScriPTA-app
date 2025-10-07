@@ -786,3 +786,195 @@ class TestGetTPMConfigEndpoint:
         
         response = client.delete("/get_tpm_config")
         assert response.status_code == 405
+
+
+class TestGetMasterdataEndpoint:
+    """Tests for the /get_masterdata endpoint"""
+    
+    def test_get_all_masterdata_without_filter(self, client):
+        """Test getting all masterdata when no MATNR8 filter is provided."""
+        response = client.get("/get_masterdata")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert "masterdata" in data
+        assert isinstance(data["masterdata"], list)
+        assert len(data["masterdata"]) > 0  # Should have some records
+        
+        # Verify structure of first masterdata record
+        if data["masterdata"]:
+            first_record = data["masterdata"][0]
+            assert "MATNR8" in first_record
+            assert "materialDescription" in first_record
+            assert "materialType" in first_record
+
+    def test_get_masterdata_with_valid_matnr8_filter(self, client):
+        """Test filtering by a valid MATNR8."""
+        test_matnr8 = 91967086
+        response = client.get(f"/get_masterdata?matnr8={test_matnr8}")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["masterdata"]) == 1
+        
+        record = data["masterdata"][0]
+        assert record["MATNR8"] == test_matnr8
+        assert record["materialDescription"] == "FB XARELTO 15MG TAFI BLI X28"
+        assert "materialType" in record
+        assert "tpm" in record
+
+    def test_get_masterdata_with_another_valid_matnr8(self, client):
+        """Test filtering by another valid MATNR8."""
+        test_matnr8 = 91967078
+        response = client.get(f"/get_masterdata?matnr8={test_matnr8}")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["masterdata"]) == 1
+        
+        record = data["masterdata"][0]
+        assert record["MATNR8"] == test_matnr8
+        assert record["materialDescription"] == "FB XARELTO 10MG TAFI BLI X 28"
+
+    def test_get_masterdata_with_invalid_matnr8_returns_404(self, client):
+        """Test that filtering by invalid MATNR8 returns 404."""
+        invalid_matnr8 = 99999999
+        response = client.get(f"/get_masterdata?matnr8={invalid_matnr8}")
+        assert response.status_code == 404
+        
+        data = response.json()
+        assert "detail" in data
+        assert f"MATNR8 '{invalid_matnr8}' not found" in data["detail"]
+
+    def test_get_masterdata_with_empty_matnr8(self, client):
+        """Test behavior when MATNR8 parameter is empty."""
+        response = client.get("/get_masterdata?matnr8=")
+        # Empty MATNR8 causes a validation error (422) because it can't be converted to int
+        assert response.status_code == 422
+
+    def test_get_masterdata_with_non_numeric_matnr8(self, client):
+        """Test behavior with non-numeric MATNR8."""
+        response = client.get("/get_masterdata?matnr8=abc123")
+        assert response.status_code == 422  # Validation error for non-integer
+
+    def test_get_masterdata_with_negative_matnr8(self, client):
+        """Test behavior with negative MATNR8."""
+        response = client.get("/get_masterdata?matnr8=-123")
+        assert response.status_code == 404  # Negative numbers won't exist
+
+    def test_masterdata_response_schema_compliance(self, client):
+        """Test that response follows the expected schema."""
+        response = client.get("/get_masterdata")
+        assert response.status_code == 200
+        
+        data = response.json()
+        
+        # Check top-level structure
+        assert isinstance(data, dict)
+        assert "masterdata" in data
+        assert isinstance(data["masterdata"], list)
+        
+        # Check each masterdata record structure
+        for record in data["masterdata"][:3]:  # Check first 3 records
+            assert isinstance(record, dict)
+            
+            # Check mandatory fields exist
+            assert "MATNR8" in record
+            assert "materialDescription" in record
+            
+            # Validate types for key fields
+            if record["MATNR8"] is not None:
+                assert isinstance(record["MATNR8"], int)
+            if record["materialDescription"] is not None:
+                assert isinstance(record["materialDescription"], str)
+
+    def test_masterdata_specific_record_fields(self, client):
+        """Test specific fields in a known masterdata record."""
+        test_matnr8 = 91967086
+        response = client.get(f"/get_masterdata?matnr8={test_matnr8}")
+        assert response.status_code == 200
+        
+        data = response.json()
+        record = data["masterdata"][0]
+        
+        # Test specific known values for this record
+        assert record["MATNR8"] == 91967086
+        assert record["materialDescription"] == "FB XARELTO 15MG TAFI BLI X28"
+        assert record["materialType"] == "YPM"
+        assert record["makeup"] == "SG/BAG"
+        assert record["plantsTxt"] == "Bayer AG"
+        assert record["principleTradename"] == "Xarelto"
+
+    def test_masterdata_with_multiple_query_parameters(self, client):
+        """Test behavior with multiple query parameters (only MATNR8 should be used)."""
+        test_matnr8 = 91967086
+        response = client.get(f"/get_masterdata?matnr8={test_matnr8}&other_param=value")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["masterdata"]) == 1
+        assert data["masterdata"][0]["MATNR8"] == test_matnr8
+
+    def test_masterdata_case_insensitive_parameter_name(self, client):
+        """Test that parameter name is case sensitive (should use matnr8)."""
+        test_matnr8 = 91967086
+        # Test with different case - MATNR8 is not recognized, so returns all records
+        response = client.get(f"/get_masterdata?MATNR8={test_matnr8}")
+        assert response.status_code == 200
+        
+        data = response.json()
+        assert len(data["masterdata"]) > 100  # Should return all records since MATNR8 param not recognized
+
+    def test_masterdata_content_type(self, client):
+        """Test that masterdata endpoint returns JSON content type."""
+        response = client.get("/get_masterdata")
+        assert response.headers["content-type"] == "application/json"
+
+    def test_masterdata_http_methods(self, client):
+        """Test that only GET method is allowed."""
+        response = client.post("/get_masterdata")
+        assert response.status_code == 405
+        
+        response = client.put("/get_masterdata")
+        assert response.status_code == 405
+        
+        response = client.delete("/get_masterdata")
+        assert response.status_code == 405
+
+    def test_masterdata_response_time_reasonable(self, client):
+        """Test that response time is reasonable for masterdata endpoint."""
+        import time
+        start_time = time.time()
+        response = client.get("/get_masterdata")
+        end_time = time.time()
+        
+        assert response.status_code == 200
+        assert (end_time - start_time) < 5.0  # Should respond within 5 seconds
+
+    def test_masterdata_pagination_behavior(self, client):
+        """Test behavior when getting all masterdata (pagination/limit handling)."""
+        response = client.get("/get_masterdata")
+        assert response.status_code == 200
+        
+        data = response.json()
+        # Should return all records without pagination for now
+        assert len(data["masterdata"]) > 100  # We know there are 169 records
+
+    def test_masterdata_optional_fields_handling(self, client):
+        """Test that optional fields are handled correctly (can be null)."""
+        response = client.get("/get_masterdata")
+        assert response.status_code == 200
+        
+        data = response.json()
+        if data["masterdata"]:
+            record = data["masterdata"][0]
+            
+            # These fields might be None/null and that should be acceptable
+            optional_fields = [
+                "remarks", "brailleText", "dra8", "dra9", "dra10",
+                "lraVersion", "hrlVersion", "acsVersion", "tpmDrawing"
+            ]
+            
+            for field in optional_fields:
+                # Field should exist in response but might be None
+                assert field in record

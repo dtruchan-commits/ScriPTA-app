@@ -38,6 +38,8 @@ portInput.characters = 5;
 var pathGroup = settingsPanel.add("group");
 pathGroup.add("statictext", undefined, "Path:").preferredSize.width = 80;
 var pathInput = pathGroup.add("edittext", undefined, "/get_layer_config?configName=default");
+//var pathInput = pathGroup.add("edittext", undefined, "/get_swatch_config?colorName=DIELINE");
+
 pathInput.characters = 40;
 
 // Format options

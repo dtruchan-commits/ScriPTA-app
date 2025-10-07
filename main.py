@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from routers import layers, swatches, tpm, utility
+from routers import layers, masterdata, swatches, tpm, utility
 
 app = FastAPI(
     title="ScriPTA",
@@ -13,6 +13,7 @@ app.include_router(utility.router)
 app.include_router(swatches.router)
 app.include_router(layers.router)
 app.include_router(tpm.router)
+app.include_router(masterdata.router)
 
 
 if __name__ == "__main__":

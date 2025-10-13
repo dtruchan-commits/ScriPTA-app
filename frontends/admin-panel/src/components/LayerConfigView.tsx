@@ -22,7 +22,7 @@ const LayerConfigView: React.FC = () => {
       const data = await ApiService.getLayerConfig(configName || undefined);
       setLayerData(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch layer configuration');
+      setError(err instanceof Error ? err.message : 'Failed to fetch InDesign Layer Configuration');
     } finally {
       setLoading(false);
     }
@@ -85,7 +85,7 @@ const LayerConfigView: React.FC = () => {
   if (loading) {
     return (
       <div className="config-view">
-        <h2>Layer Configuration</h2>
+        <h2>InDesign Layer Configuration</h2>
         <div className="loading">Loading layer data...</div>
       </div>
     );
@@ -94,7 +94,7 @@ const LayerConfigView: React.FC = () => {
   if (error) {
     return (
       <div className="config-view">
-        <h2>Layer Configuration</h2>
+        <h2>InDesign Layer Configuration</h2>
         <div className="error">Error: {error}</div>
         <button onClick={() => fetchLayerConfig()}>Retry</button>
       </div>
@@ -103,7 +103,7 @@ const LayerConfigView: React.FC = () => {
 
   return (
     <div className="config-view">
-      <h2>Layer Configuration</h2>
+      <h2>InDesign Layer Configuration</h2>
       
       <div className="filter-section">
         <form onSubmit={handleFilter} className="filter-form">
@@ -141,8 +141,8 @@ const LayerConfigView: React.FC = () => {
         ) : (
           <div className="no-data">
             {filterConfigName 
-              ? `No layer configurations found for config name "${filterConfigName}"`
-              : 'No layer configuration data available'
+              ? `No InDesign Layer Configurations found for config name "${filterConfigName}"`
+              : 'No InDesign Layer Configuration data available'
             }
           </div>
         )}

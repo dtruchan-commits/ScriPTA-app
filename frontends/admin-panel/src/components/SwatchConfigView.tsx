@@ -46,6 +46,48 @@ const SwatchConfigView: React.FC = () => {
     return config.colorValues.join(', ');
   };
 
+  const renderColorPreview = (config: SwatchConfig) => {
+    let backgroundColor = '#ffffff';
+    
+    // Handle CMYK color values
+    if (config.colorSpace === 'CMYK' && config.colorValues.length >= 4) {
+      const [c, m, y, k] = config.colorValues;
+      
+      // Convert CMYK to RGB approximation
+      const r = 255 * (1 - c / 100) * (1 - k / 100);
+      const g = 255 * (1 - m / 100) * (1 - k / 100);
+      const b = 255 * (1 - y / 100) * (1 - k / 100);
+      
+      backgroundColor = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+    }
+    // Handle RGB color values
+    else if (config.colorSpace === 'RGB' && config.colorValues.length >= 3) {
+      const [r, g, b] = config.colorValues;
+      backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    }
+    // Handle LAB or other color spaces - show a placeholder pattern
+    else {
+      backgroundColor = 'linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%), linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%)';
+    }
+
+    return (
+      <div 
+        className="color-preview-circle"
+        style={{
+          width: '24px',
+          height: '24px',
+          borderRadius: '50%',
+          border: '1px solid #ccc',
+          background: backgroundColor,
+          backgroundSize: '4px 4px',
+          backgroundPosition: '0 0, 2px 2px',
+          display: 'inline-block'
+        }}
+        title={`${config.colorName}: ${config.colorValues.join(', ')}`}
+      />
+    );
+  };
+
   if (loading) {
     return (
       <div className="config-view">
@@ -97,6 +139,7 @@ const SwatchConfigView: React.FC = () => {
                   <th>Color Model</th>
                   <th>Color Space</th>
                   <th>Color Values</th>
+                  <th>Color Preview</th>
                 </tr>
               </thead>
               <tbody>
@@ -114,6 +157,7 @@ const SwatchConfigView: React.FC = () => {
                       </span>
                     </td>
                     <td className="color-values">{renderColorValues(swatch)}</td>
+                    <td className="color-preview">{renderColorPreview(swatch)}</td>
                   </tr>
                 ))}
               </tbody>

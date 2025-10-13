@@ -10,6 +10,11 @@ export const getChangelogEntries = (): ChangeLogEntry[] => {
     {
       date: '2025-10-13',
       type: ChangelogType.ADMIN_PANEL,
+      description: 'Added color preview circles in Swatch Config View to visualize CMYK and spot color values next to Color Values column'
+    },
+    {
+      date: '2025-10-13',
+      type: ChangelogType.ADMIN_PANEL,
       description: 'Renmamed Print Layer in Layer Config, added Checkbox'
     },
     {

@@ -1,9 +1,15 @@
+import axios from 'axios';
+import type {
+    ApiError,
+    LayerConfigResponse,
+    SwatchConfigResponse,
+    TPMConfigResponse
+} from '../types';
+
 // API Configuration
 const API_BASE_URL = 'http://localhost:8000';
 
 // API Client with Axios
-import axios from 'axios';
-
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
@@ -12,56 +18,18 @@ const apiClient = axios.create({
   },
 });
 
-// Response type interfaces based on backend models
-export interface SwatchConfig {
-  colorName: string;
-  colorModel: 'SPOT' | 'PROCESS';
-  colorSpace: 'CMYK' | 'RGB' | 'LAB';
-  colorValues: number[];
-}
-
-export interface SwatchConfigResponse {
-  swatches: SwatchConfig[];
-}
-
-export interface LayerConfigResponse {
-  name: string;
-  locked: boolean;
-  print: boolean;
-  color: string;
-}
-
-export interface LayerConfigSetResponse {
-  configName: string;
-  layers: LayerConfigResponse[];
-}
-
-export interface TpmConfig {
-  id: number;
-  TPM: string;
-  drawDieline?: string;
-  drawCombination?: string;
-  A?: number;
-  B?: number;
-  H?: number;
-  variant?: string;
-  version: number;
-  variablesList?: string;
-  createdBy?: string;
-  createdAt?: string;
-  modifiedBy?: string;
-  modifiedAt?: string;
-  packType?: string;
-  description?: string;
-  comment?: string;
-  panelList?: string;
-  createdTimestamp?: string;
-  updatedTimestamp?: string;
-}
-
-export interface TPMConfigResponse {
-  tpms: TpmConfig[];
-}
+// Add response interceptor for consistent error handling
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const apiError: ApiError = {
+      status: error.response?.status || 0,
+      message: error.response?.data?.detail || error.message || 'Unknown error occurred',
+      details: error.response?.data
+    };
+    return Promise.reject(apiError);
+  }
+);
 
 // API Service Functions
 export class ApiService {
@@ -78,7 +46,7 @@ export class ApiService {
   }
 
   // Layer Configuration API
-  static async getLayerConfig(configName?: string): Promise<LayerConfigSetResponse[]> {
+  static async getLayerConfig(configName?: string): Promise<LayerConfigResponse> {
     try {
       const params = configName ? { configName } : {};
       const response = await apiClient.get('/get_layer_config', { params });

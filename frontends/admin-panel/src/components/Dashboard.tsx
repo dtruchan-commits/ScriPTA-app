@@ -188,6 +188,9 @@ const Dashboard: React.FC = () => {
           <h3>Available Endpoints</h3>
           <ul className="endpoint-list">
             <li><code>GET /get_swatch_config</code> - Retrieve swatch configurations</li>
+            <li><code>POST /create_swatch_config</code> - Create new swatch configuration</li>
+            <li><code>PUT /update_swatch_config/{'{color_name}'}</code> - Update existing swatch configuration</li>
+            <li><code>DELETE /delete_swatch_config/{'{color_name}'}</code> - Delete swatch configuration</li>
             <li><code>GET /get_layer_config</code> - Retrieve layer configurations</li>
             <li><code>GET /get_tpm_config</code> - Retrieve TPM configurations</li>
           </ul>

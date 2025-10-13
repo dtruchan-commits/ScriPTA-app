@@ -70,6 +70,87 @@ def get_swatches_from_db(color_name: Optional[str] = None) -> List[SwatchConfig]
         conn.close()
 
 
+def update_swatch_in_db(color_name: str, swatch_config: SwatchConfig) -> SwatchConfig:
+    """Update an existing swatch configuration in the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # Check if swatch exists
+        cursor.execute("SELECT id FROM swatches WHERE color_name = ?", (color_name,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail=f"Swatch with color name '{color_name}' not found")
+        
+        # Update the swatch
+        color_values_json = json.dumps(swatch_config.color_values)
+        cursor.execute("""
+            UPDATE swatches
+            SET color_name = ?, color_model = ?, color_space = ?, color_values = ?
+            WHERE color_name = ?
+        """, (
+            swatch_config.color_name,
+            swatch_config.color_model,
+            swatch_config.color_space,
+            color_values_json,
+            color_name
+        ))
+        
+        conn.commit()
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail=f"Swatch with color name '{color_name}' not found")
+        
+        return swatch_config
+    finally:
+        conn.close()
+
+
+def delete_swatch_from_db(color_name: str) -> bool:
+    """Delete a swatch configuration from the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        cursor.execute("DELETE FROM swatches WHERE color_name = ?", (color_name,))
+        conn.commit()
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail=f"Swatch with color name '{color_name}' not found")
+        
+        return True
+    finally:
+        conn.close()
+
+
+def create_swatch_in_db(swatch_config: SwatchConfig) -> SwatchConfig:
+    """Create a new swatch configuration in the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # Check if swatch already exists
+        cursor.execute("SELECT id FROM swatches WHERE color_name = ?", (swatch_config.color_name,))
+        if cursor.fetchone():
+            raise HTTPException(status_code=409, detail=f"Swatch with color name '{swatch_config.color_name}' already exists")
+        
+        # Insert the new swatch
+        color_values_json = json.dumps(swatch_config.color_values)
+        cursor.execute("""
+            INSERT INTO swatches (color_name, color_model, color_space, color_values)
+            VALUES (?, ?, ?, ?)
+        """, (
+            swatch_config.color_name,
+            swatch_config.color_model,
+            swatch_config.color_space,
+            color_values_json
+        ))
+        
+        conn.commit()
+        return swatch_config
+    finally:
+        conn.close()
+
+
 def get_layer_configs_from_db(config_name: Optional[str] = None) -> List[LayerConfigSetResponse]:
     """Retrieve layer configurations from the database."""
     conn = get_db_connection()

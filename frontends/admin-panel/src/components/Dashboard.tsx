@@ -18,72 +18,84 @@ const Dashboard: React.FC = () => {
     error: null as string | null
   });
 
-  useEffect(() => {
-    const checkSystemStatus = async () => {
-      try {
+  const checkSystemStatus = async (isInitialLoad = false) => {
+    try {
+      // Only show loading state on initial load to avoid flickering during periodic checks
+      if (isInitialLoad) {
         setSystemStatus(prev => ({ ...prev, loading: true, error: null }));
         setStats(prev => ({ ...prev, loading: true, error: null }));
-        
-        // Check if backend is online
-        const isBackendOnline = await ApiService.checkBackendHealth();
-        
-        let isDatabaseConnected = false;
-        let systemError = null;
-        
-        if (isBackendOnline) {
-          // Check database connection only if backend is online
-          isDatabaseConnected = await ApiService.checkDatabaseHealth();
-          if (!isDatabaseConnected) {
-            systemError = 'Database connection failed. Some features may not work properly.';
-          }
-        } else {
-          systemError = 'Backend server is not responding. Please check if the server is running.';
+      }
+      
+      // Check if backend is online
+      const isBackendOnline = await ApiService.checkBackendHealth();
+      
+      let isDatabaseConnected = false;
+      let systemError = null;
+      
+      if (isBackendOnline) {
+        // Check database connection only if backend is online
+        isDatabaseConnected = await ApiService.checkDatabaseHealth();
+        if (!isDatabaseConnected) {
+          systemError = 'Database connection failed. Some features may not work properly.';
         }
-        
-        setSystemStatus({
-          backendOnline: isBackendOnline,
-          databaseConnected: isDatabaseConnected,
-          loading: false,
-          error: systemError
-        });
-        
-        // Only fetch stats if both backend and database are working
-        if (isBackendOnline && isDatabaseConnected) {
-          // Fetch all configs to get counts
-          const [swatchData, layerData, tpmData] = await Promise.all([
-            ApiService.getSwatchConfig().catch(() => ({ swatches: [] })),
-            ApiService.getLayerConfig().catch(() => []),
-            ApiService.getTpmConfig().catch(() => ({ tpms: [] }))
-          ]);
+      } else {
+        systemError = 'Backend server is not responding. Please check if the server is running.';
+      }
+      
+      setSystemStatus({
+        backendOnline: isBackendOnline,
+        databaseConnected: isDatabaseConnected,
+        loading: false,
+        error: systemError
+      });
+      
+      // Only fetch stats if both backend and database are working
+      if (isBackendOnline && isDatabaseConnected) {
+        // Fetch all configs to get counts
+        const [swatchData, layerData, tpmData] = await Promise.all([
+          ApiService.getSwatchConfig().catch(() => ({ swatches: [] })),
+          ApiService.getLayerConfig().catch(() => []),
+          ApiService.getTpmConfig().catch(() => ({ tpms: [] }))
+        ]);
 
-          setStats({
-            swatches: swatchData.swatches?.length || 0,
-            layerConfigs: layerData.length || 0,
-            tpmConfigs: tpmData.tpms?.length || 0,
-            loading: false,
-            error: null
-          });
-        } else {
-          // Set stats to not loading but don't fetch data if there are system issues
-          setStats(prev => ({
-            ...prev,
-            loading: false
-          }));
-        }
-      } catch (error) {
-        setSystemStatus(prev => ({
-          ...prev,
+        setStats({
+          swatches: swatchData.swatches?.length || 0,
+          layerConfigs: layerData.length || 0,
+          tpmConfigs: tpmData.tpms?.length || 0,
           loading: false,
-          error: error instanceof Error ? error.message : 'Failed to check system status'
-        }));
+          error: null
+        });
+      } else {
+        // Set stats to not loading but don't fetch data if there are system issues
         setStats(prev => ({
           ...prev,
           loading: false
         }));
       }
-    };
+    } catch (error) {
+      setSystemStatus(prev => ({
+        ...prev,
+        loading: false,
+        error: error instanceof Error ? error.message : 'Failed to check system status'
+      }));
+      setStats(prev => ({
+        ...prev,
+        loading: false
+      }));
+    }
+  };
 
-    checkSystemStatus();
+  useEffect(() => {
+    // Initial check
+    checkSystemStatus(true);
+    
+    // Set up periodic checking every 10 seconds
+    const interval = setInterval(() => {
+      checkSystemStatus(false);
+    }, 10000);
+    
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -181,13 +193,28 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="info-section">
-          <h3>Features</h3>
-          <ul className="feature-list">
-            <li>✅ Read access to all configuration types</li>
-            <li>🔍 Filtering capabilities for all endpoints</li>
-            <li>📊 Real-time data loading with error handling</li>
-            <li>📱 Responsive design for all devices</li>
-            <li>🔄 Future: CRUD operations (Create, Update, Delete)</li>
+          <h3>Change Log</h3>
+          <ul className="changelog-list">
+            <li>
+              <span className="changelog-date">2025-10-13</span>
+              <span className="changelog-item">Added Change Log card to replace Features section</span>
+            </li>
+            <li>
+              <span className="changelog-date">2025-10-12</span>
+              <span className="changelog-item">Improved dashboard statistics display</span>
+            </li>
+            <li>
+              <span className="changelog-date">2025-10-11</span>
+              <span className="changelog-item">Enhanced system status monitoring</span>
+            </li>
+            <li>
+              <span className="changelog-date">2025-10-10</span>
+              <span className="changelog-item">Implemented responsive design for mobile devices</span>
+            </li>
+            <li>
+              <span className="changelog-date">2025-10-09</span>
+              <span className="changelog-item">Added filtering capabilities for configuration views</span>
+            </li>
           </ul>
         </div>
       </div>

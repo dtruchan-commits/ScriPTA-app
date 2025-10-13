@@ -66,6 +66,17 @@ export const LayerColor = {
 
 export type LayerColor = typeof LayerColor[keyof typeof LayerColor];
 
+/**
+ * Changelog entry types for categorizing changes
+ */
+export const ChangelogType = {
+  ADMIN_PANEL: 'Admin-Panel',
+  BACKEND: 'Backend',
+  INDESIGN_SCRIPT: 'InDesign-Script'
+} as const;
+
+export type ChangelogType = typeof ChangelogType[keyof typeof ChangelogType];
+
 // =============================================================================
 // SWATCH CONFIGURATION TYPES
 // =============================================================================

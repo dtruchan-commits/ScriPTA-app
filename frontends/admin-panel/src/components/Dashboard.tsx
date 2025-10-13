@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiService } from '../services/api';
+import ChangeLog from './ChangeLog';
+import { changelogEntries } from './ChangeLogData';
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState({
@@ -10,6 +12,8 @@ const Dashboard: React.FC = () => {
     loading: true,
     error: null as string | null
   });
+
+
 
   const [systemStatus, setSystemStatus] = useState({
     backendOnline: false,
@@ -131,7 +135,6 @@ const Dashboard: React.FC = () => {
 
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon">🎨</div>
           <div className="stat-content">
             <h3>Swatch Configurations</h3>
             <div className="stat-number">
@@ -145,7 +148,6 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">📋</div>
           <div className="stat-content">
             <h3>Layer Configurations</h3>
             <div className="stat-number">
@@ -159,7 +161,6 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">📦</div>
           <div className="stat-content">
             <h3>TPM Configurations</h3>
             <div className="stat-number">
@@ -192,31 +193,7 @@ const Dashboard: React.FC = () => {
           </ul>
         </div>
 
-        <div className="info-section">
-          <h3>Change Log</h3>
-          <ul className="changelog-list">
-            <li>
-              <span className="changelog-date">2025-10-13</span>
-              <span className="changelog-item">Added Change Log card to replace Features section</span>
-            </li>
-            <li>
-              <span className="changelog-date">2025-10-12</span>
-              <span className="changelog-item">Improved dashboard statistics display</span>
-            </li>
-            <li>
-              <span className="changelog-date">2025-10-11</span>
-              <span className="changelog-item">Enhanced system status monitoring</span>
-            </li>
-            <li>
-              <span className="changelog-date">2025-10-10</span>
-              <span className="changelog-item">Implemented responsive design for mobile devices</span>
-            </li>
-            <li>
-              <span className="changelog-date">2025-10-09</span>
-              <span className="changelog-item">Added filtering capabilities for configuration views</span>
-            </li>
-          </ul>
-        </div>
+                <ChangeLog entries={changelogEntries} />
       </div>
     </div>
   );

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import type { TPMConfigResponse, TpmConfig } from '../services/api';
 import { ApiService } from '../services/api';
+import type { TpmConfig, TpmConfigResponse } from '../types';
 
 const TpmConfigView: React.FC = () => {
-  const [tpmData, setTpmData] = useState<TPMConfigResponse | null>(null);
+  const [tpmData, setTpmData] = useState<TpmConfigResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [filterTpmName, setFilterTpmName] = useState<string>('');

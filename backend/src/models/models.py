@@ -123,7 +123,7 @@ class TpmConfig(BaseModel):
     updated_timestamp: Optional[str] = Field(None, alias="updatedTimestamp", description="Updated timestamp")
 
 
-class TPMConfigResponse(BaseModel):
+class TpmConfigResponse(BaseModel):
     tpms: List[TpmConfig]
 
 

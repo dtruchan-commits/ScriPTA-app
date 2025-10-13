@@ -3,7 +3,7 @@ import type {
     ApiError,
     LayerConfigResponse,
     SwatchConfigResponse,
-    TPMConfigResponse
+    TpmConfigResponse
 } from '../types';
 
 // API Configuration
@@ -58,7 +58,7 @@ export class ApiService {
   }
 
   // TPM Configuration API
-  static async getTpmConfig(tpmName?: string): Promise<TPMConfigResponse> {
+  static async getTpmConfig(tpmName?: string): Promise<TpmConfigResponse> {
     try {
       const params = tpmName ? { tpmName } : {};
       const response = await apiClient.get('/get_tpm_config', { params });

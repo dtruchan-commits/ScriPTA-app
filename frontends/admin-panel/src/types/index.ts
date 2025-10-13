@@ -194,7 +194,7 @@ export interface TpmConfig {
 /**
  * Response type for TPM configuration API
  */
-export interface TPMConfigResponse {
+export interface TpmConfigResponse {
   /** Array of TPM configurations */
   tpms: TpmConfig[];
 }

@@ -7,14 +7,14 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import ValidationError
 
-from ..models.models import TPMConfigResponse
+from ..models.models import TpmConfigResponse
 from .database import get_tpms_from_db
 
 router = APIRouter()
 
 
-@router.get("/get_tpm_config", response_model=TPMConfigResponse)
-async def get_tpm_config(tpm_name: Optional[str] = Query(None, description="Filter by TPM name", alias="tpmName")) -> TPMConfigResponse:
+@router.get("/get_tpm_config", response_model=TpmConfigResponse)
+async def get_tpm_config(tpm_name: Optional[str] = Query(None, description="Filter by TPM name", alias="tpmName")) -> TpmConfigResponse:
     """
     Get TPM configuration data, optionally filtered by TPM name.
 
@@ -49,7 +49,7 @@ async def get_tpm_config(tpm_name: Optional[str] = Query(None, description="Filt
         if tpm_name and not tpms:
             raise HTTPException(status_code=404, detail=f"TPM name '{tpm_name}' not found")
 
-        return TPMConfigResponse(tpms=tpms)
+        return TpmConfigResponse(tpms=tpms)
 
     except HTTPException:
         # Re-raise HTTPExceptions (like 404) without modification

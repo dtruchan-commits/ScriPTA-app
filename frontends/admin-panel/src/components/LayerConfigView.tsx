@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import type { LayerConfigResponse, LayerConfigSetResponse } from '../services/api';
 import { ApiService } from '../services/api';
+import type { LayerConfig, LayerConfigResponse } from '../types';
 
 const LayerConfigView: React.FC = () => {
-  const [layerData, setLayerData] = useState<LayerConfigSetResponse[]>([]);
+  const [layerData, setLayerData] = useState<LayerConfigResponse>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [filterConfigName, setFilterConfigName] = useState<string>('');
@@ -35,7 +35,7 @@ const LayerConfigView: React.FC = () => {
     fetchLayerConfig();
   };
 
-  const renderLayerTable = (layers: LayerConfigResponse[]) => {
+  const renderLayerTable = (layers: LayerConfig[]) => {
     return (
       <table className="layer-table">
         <thead>

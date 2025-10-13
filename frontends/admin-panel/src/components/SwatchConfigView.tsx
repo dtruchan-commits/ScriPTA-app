@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { SwatchConfig, SwatchConfigResponse } from '../services/api';
 import { ApiService } from '../services/api';
+import type { SwatchConfig, SwatchConfigResponse } from '../types';
 
 const SwatchConfigView: React.FC = () => {
   const [swatchData, setSwatchData] = useState<SwatchConfigResponse | null>(null);

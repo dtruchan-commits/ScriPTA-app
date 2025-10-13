@@ -19,7 +19,7 @@ src/types/
 Core business domain types that represent the data structures used throughout the application:
 
 - **Configuration Types**: `SwatchConfig`, `LayerConfig`, `TpmConfig`
-- **Response Types**: `SwatchConfigResponse`, `LayerConfigResponse`, `TPMConfigResponse`
+- **Response Types**: `SwatchConfigResponse`, `LayerConfigResponse`, `TpmConfigResponse`
 - **Enums**: `ColorModel`, `ColorSpace`, `LayerName`, `LayerColor`
 
 ### 🔌 API Types (`api.ts`)

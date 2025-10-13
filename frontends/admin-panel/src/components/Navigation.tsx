@@ -15,7 +15,7 @@ const Navigation: React.FC = () => {
             className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
             end
           >
-            🏠 Dashboard
+            Dashboard
           </NavLink>
         </li>
         <li>
@@ -23,7 +23,7 @@ const Navigation: React.FC = () => {
             to="/swatches" 
             className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
           >
-            🎨 Swatch Config
+            Swatch Config
           </NavLink>
         </li>
         <li>
@@ -31,7 +31,7 @@ const Navigation: React.FC = () => {
             to="/layers" 
             className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
           >
-            📋 Layer Config
+            Layer Config
           </NavLink>
         </li>
         <li>
@@ -39,7 +39,7 @@ const Navigation: React.FC = () => {
             to="/tpm" 
             className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
           >
-            📦 TPM Config
+            TPM Config
           </NavLink>
         </li>
       </ul>

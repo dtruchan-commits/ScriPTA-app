@@ -43,7 +43,7 @@ const LayerConfigView: React.FC = () => {
             <th>Layer Name</th>
             <th>Locked</th>
             <th>Print</th>
-            <th>Color</th>
+            <th>Layer Color</th>
           </tr>
         </thead>
         <tbody>
@@ -57,7 +57,7 @@ const LayerConfigView: React.FC = () => {
               </td>
               <td>
                 <span className={`status-badge ${layer.print ? 'print' : 'no-print'}`}>
-                  {layer.print ? '🖨️ Print' : '🚫 No Print'}
+                  {layer.print ? 'Print' : 'No Print'}
                 </span>
               </td>
               <td>
@@ -119,7 +119,7 @@ const LayerConfigView: React.FC = () => {
             {layerData.map((configSet, index) => (
               <div key={index} className="config-set">
                 <h4 className="config-name">
-                  📁 {configSet.configName}
+                  {configSet.configName}
                   <span className="layer-count">({configSet.layers.length} layers)</span>
                 </h4>
                 <div className="table-container">

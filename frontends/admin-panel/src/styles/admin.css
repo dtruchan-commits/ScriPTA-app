@@ -717,6 +717,14 @@ body {
   color: #2c3e50;
 }
 
+.print-checkbox {
+  display: block;
+  margin: 0 auto;
+  width: 16px;
+  height: 16px;
+  cursor: default;
+}
+
 /* TPM Config Specific */
 .tpm-table .tpm-row {
   cursor: pointer;

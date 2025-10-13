@@ -49,7 +49,7 @@ const LayerConfigView: React.FC = () => {
           <tr>
             <th>Layer Name</th>
             <th>Locked</th>
-            <th>Print</th>
+            <th>Print Layer</th>
             <th>Layer Color</th>
           </tr>
         </thead>
@@ -63,9 +63,12 @@ const LayerConfigView: React.FC = () => {
                 </span>
               </td>
               <td>
-                <span className={`status-badge ${layer.print ? 'print' : 'no-print'}`}>
-                  {layer.print ? 'Print' : 'No Print'}
-                </span>
+                <input 
+                  type="checkbox" 
+                  checked={layer.print} 
+                  readOnly
+                  className="print-checkbox"
+                />
               </td>
               <td>
                 <span className={`color-badge ${layer.color.toLowerCase().replace('_', '-')}`}>

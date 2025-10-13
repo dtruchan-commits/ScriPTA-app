@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChangelogType } from '../types';
 
 interface ChangeLogEntry {
@@ -9,9 +9,28 @@ interface ChangeLogEntry {
 
 interface ChangeLogProps {
   entries: ChangeLogEntry[];
+  itemsPerPage?: number;
 }
 
-const ChangeLog: React.FC<ChangeLogProps> = ({ entries }) => {
+const ChangeLog: React.FC<ChangeLogProps> = ({ entries, itemsPerPage = 4 }) => {
+  const [currentPage, setCurrentPage] = useState(0);
+  
+  const totalPages = Math.ceil(entries.length / itemsPerPage);
+  const startIndex = currentPage * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentEntries = entries.slice(startIndex, endIndex);
+  
+  const goToNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  
+  const goToPreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   const getPillClass = (type: ChangelogType) => {
     switch (type) {
       case ChangelogType.ADMIN_PANEL:
@@ -29,8 +48,8 @@ const ChangeLog: React.FC<ChangeLogProps> = ({ entries }) => {
     <div className="info-section">
       <h3>Change Log</h3>
       <ul className="changelog-list">
-        {entries.map((entry, index) => (
-          <li key={index}>
+        {currentEntries.map((entry, index) => (
+          <li key={startIndex + index}>
             <div className="changelog-header">
               <span className={getPillClass(entry.type)}>{entry.type}</span>
               <span className="changelog-date">{entry.date}</span>
@@ -41,6 +60,30 @@ const ChangeLog: React.FC<ChangeLogProps> = ({ entries }) => {
           </li>
         ))}
       </ul>
+      
+      {totalPages > 1 && (
+        <div className="changelog-pagination">
+          <button 
+            className="pagination-btn"
+            onClick={goToPreviousPage}
+            disabled={currentPage === 0}
+          >
+            ← Previous
+          </button>
+          
+          <span className="pagination-info">
+            Page {currentPage + 1} of {totalPages}
+          </span>
+          
+          <button 
+            className="pagination-btn"
+            onClick={goToNextPage}
+            disabled={currentPage === totalPages - 1}
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 };

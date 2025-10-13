@@ -9,6 +9,11 @@ export const getChangelogEntries = (): ChangeLogEntry[] => {
   return [
     {
       date: '2025-10-13',
+      type: ChangelogType.ADMIN_PANEL,
+      description: 'Renmamed Print Layer in Layer Config, added Checkbox'
+    },
+    {
+      date: '2025-10-13',
       type: ChangelogType.BACKEND,
       description: 'Added complete CRUD operations for swatch configurations: create, update, and delete endpoints with comprehensive error handling and validation'
     },

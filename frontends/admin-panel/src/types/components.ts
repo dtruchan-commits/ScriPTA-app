@@ -7,12 +7,12 @@
 
 import type { ReactNode } from 'react';
 import type {
-    DataState,
-    FilterState,
-    LayerConfigSet,
-    LoadingState,
-    SwatchConfig,
-    TpmConfig
+  DataState,
+  FilterState,
+  LayerConfigSet,
+  LoadingState,
+  SwatchConfig,
+  TpmConfig
 } from './index';
 
 // =============================================================================
@@ -215,7 +215,7 @@ export interface NavigationProps extends BaseComponentProps {
 }
 
 // =============================================================================
-// DASHBOARD COMPONENT PROPS
+// SYSTEM OVERVIEW COMPONENT PROPS
 // =============================================================================
 
 /**
@@ -239,9 +239,9 @@ export interface StatCardProps extends BaseComponentProps {
 }
 
 /**
- * Dashboard component props
+ * System Overview component props
  */
-export interface DashboardProps extends BaseComponentProps {
+export interface SystemOverviewProps extends BaseComponentProps {
   /** Statistics data */
   stats?: {
     swatches: number;

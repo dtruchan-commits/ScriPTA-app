@@ -30,7 +30,7 @@ export const getChangelogEntries = (): ChangeLogEntry[] => {
     {
       date: '2025-10-13',
       type: ChangelogType.BACKEND,
-      description: 'Backend/BD Health Endpoints with Indicators in Admin Panel Dashboard'
+      description: 'Backend/BD Health Endpoints with Indicators in Admin Panel System Overview'
     },
     {
       date: '2025-10-13',

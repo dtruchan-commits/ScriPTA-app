@@ -4,7 +4,7 @@ import { ApiService } from '../services/api';
 import ChangeLog from './ChangeLog';
 import { changelogEntries } from './ChangeLogData';
 
-const Dashboard: React.FC = () => {
+const SystemOverview: React.FC = () => {
   const [stats, setStats] = useState({
     swatches: 0,
     layerConfigs: 0,
@@ -103,10 +103,9 @@ const Dashboard: React.FC = () => {
   }, []);
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-header">
-        <h2>Dashboard</h2>
-        <p>Welcome to the ScriPTA Configuration Management System</p>
+    <div className="system-overview">
+      <div className="system-overview-header">
+        <h2>System Overview</h2>
       </div>
 
       <div className="system-status">
@@ -174,7 +173,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="dashboard-info">
+      <div className="system-overview-info">
         <div className="info-section">
           <h3>About ScriPTA</h3>
           <p>
@@ -202,4 +201,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default SystemOverview;

@@ -4,7 +4,8 @@ const Navigation: React.FC = () => {
   return (
     <nav className="navigation">
       <div className="nav-header">
-        <h1>ScriPTA Admin Panel</h1>
+        <h1>ScriPTA</h1>
+        <h1>Admin Panel</h1>
         <p>Configuration Management System</p>
       </div>
       
@@ -15,7 +16,7 @@ const Navigation: React.FC = () => {
             className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
             end
           >
-            Dashboard
+            System Overview
           </NavLink>
         </li>
         <li>

@@ -301,13 +301,13 @@ export interface FilterState {
 }
 
 // =============================================================================
-// DASHBOARD TYPES
+// SYSTEM OVERVIEW TYPES
 // =============================================================================
 
 /**
- * Statistics for dashboard display
+ * Statistics for system overview display
  */
-export interface DashboardStats {
+export interface SystemOverviewStats {
   /** Number of swatch configurations */
   swatches: number;
   /** Number of layer configuration sets */

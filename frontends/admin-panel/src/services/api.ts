@@ -1,9 +1,9 @@
 import axios from 'axios';
 import type {
-    ApiError,
-    LayerConfigResponse,
-    SwatchConfigResponse,
-    TpmConfigResponse
+  ApiError,
+  LayerConfigResponse,
+  SwatchConfigResponse,
+  TpmConfigResponse
 } from '../types';
 
 // API Configuration
@@ -33,6 +33,33 @@ apiClient.interceptors.response.use(
 
 // API Service Functions
 export class ApiService {
+  // Backend Health Check
+  static async checkBackendHealth(): Promise<boolean> {
+    try {
+      const response = await apiClient.get('/', { timeout: 3000 });
+      return response.status === 200;
+    } catch (error) {
+      console.warn('Backend health check failed:', error);
+      return false;
+    }
+  }
+
+  // Database Health Check (mocked for now)
+  static async checkDatabaseHealth(): Promise<boolean> {
+    try {
+      // TODO: Replace with actual database health check endpoint when implemented
+      // For now, we'll mock it by checking if we can fetch any data
+      const response = await apiClient.get('/get_swatch_config', { 
+        params: { limit: 1 }, 
+        timeout: 5000 
+      });
+      return response.status === 200;
+    } catch (error) {
+      console.warn('Database health check failed:', error);
+      return false;
+    }
+  }
+
   // Swatch Configuration API
   static async getSwatchConfig(colorName?: string): Promise<SwatchConfigResponse> {
     try {

@@ -11,35 +11,79 @@ const Dashboard: React.FC = () => {
     error: null as string | null
   });
 
+  const [systemStatus, setSystemStatus] = useState({
+    backendOnline: false,
+    databaseConnected: false,
+    loading: true,
+    error: null as string | null
+  });
+
   useEffect(() => {
-    const fetchStats = async () => {
+    const checkSystemStatus = async () => {
       try {
+        setSystemStatus(prev => ({ ...prev, loading: true, error: null }));
         setStats(prev => ({ ...prev, loading: true, error: null }));
         
-        // Fetch all configs to get counts
-        const [swatchData, layerData, tpmData] = await Promise.all([
-          ApiService.getSwatchConfig().catch(() => ({ swatches: [] })),
-          ApiService.getLayerConfig().catch(() => []),
-          ApiService.getTpmConfig().catch(() => ({ tpms: [] }))
-        ]);
-
-        setStats({
-          swatches: swatchData.swatches?.length || 0,
-          layerConfigs: layerData.length || 0,
-          tpmConfigs: tpmData.tpms?.length || 0,
+        // Check if backend is online
+        const isBackendOnline = await ApiService.checkBackendHealth();
+        
+        let isDatabaseConnected = false;
+        let systemError = null;
+        
+        if (isBackendOnline) {
+          // Check database connection only if backend is online
+          isDatabaseConnected = await ApiService.checkDatabaseHealth();
+          if (!isDatabaseConnected) {
+            systemError = 'Database connection failed. Some features may not work properly.';
+          }
+        } else {
+          systemError = 'Backend server is not responding. Please check if the server is running.';
+        }
+        
+        setSystemStatus({
+          backendOnline: isBackendOnline,
+          databaseConnected: isDatabaseConnected,
           loading: false,
-          error: null
+          error: systemError
         });
+        
+        // Only fetch stats if both backend and database are working
+        if (isBackendOnline && isDatabaseConnected) {
+          // Fetch all configs to get counts
+          const [swatchData, layerData, tpmData] = await Promise.all([
+            ApiService.getSwatchConfig().catch(() => ({ swatches: [] })),
+            ApiService.getLayerConfig().catch(() => []),
+            ApiService.getTpmConfig().catch(() => ({ tpms: [] }))
+          ]);
+
+          setStats({
+            swatches: swatchData.swatches?.length || 0,
+            layerConfigs: layerData.length || 0,
+            tpmConfigs: tpmData.tpms?.length || 0,
+            loading: false,
+            error: null
+          });
+        } else {
+          // Set stats to not loading but don't fetch data if there are system issues
+          setStats(prev => ({
+            ...prev,
+            loading: false
+          }));
+        }
       } catch (error) {
-        setStats(prev => ({
+        setSystemStatus(prev => ({
           ...prev,
           loading: false,
-          error: error instanceof Error ? error.message : 'Failed to load statistics'
+          error: error instanceof Error ? error.message : 'Failed to check system status'
+        }));
+        setStats(prev => ({
+          ...prev,
+          loading: false
         }));
       }
     };
 
-    fetchStats();
+    checkSystemStatus();
   }, []);
 
   return (
@@ -47,6 +91,30 @@ const Dashboard: React.FC = () => {
       <div className="dashboard-header">
         <h2>Dashboard</h2>
         <p>Welcome to the ScriPTA Configuration Management System</p>
+      </div>
+
+      <div className="system-status">
+        <h3>System Status</h3>
+        <div className="status-indicators">
+          <div className="status-item">
+            <span className="status-label">Backend Server:</span>
+            <span className={`status-indicator ${systemStatus.loading ? 'loading' : systemStatus.backendOnline ? 'online' : 'offline'}`}>
+              {systemStatus.loading ? 'Checking...' : systemStatus.backendOnline ? 'Online' : 'Offline'}
+            </span>
+          </div>
+          <div className="status-item">
+            <span className="status-label">Database:</span>
+            <span className={`status-indicator ${systemStatus.loading ? 'loading' : !systemStatus.backendOnline ? 'unknown' : systemStatus.databaseConnected ? 'connected' : 'disconnected'}`}>
+              {systemStatus.loading ? 'Checking...' : !systemStatus.backendOnline ? 'Unknown' : systemStatus.databaseConnected ? 'Connected' : 'Disconnected'}
+            </span>
+          </div>
+        </div>
+        {systemStatus.error && (
+          <div className="system-error-message">
+            <h4>System Issue Detected</h4>
+            <p>{systemStatus.error}</p>
+          </div>
+        )}
       </div>
 
       <div className="stats-grid">
@@ -92,13 +160,6 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {stats.error && (
-        <div className="error-message">
-          <h4>Error loading statistics</h4>
-          <p>{stats.error}</p>
-        </div>
-      )}
 
       <div className="dashboard-info">
         <div className="info-section">

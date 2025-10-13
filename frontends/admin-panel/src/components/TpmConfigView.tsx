@@ -13,6 +13,13 @@ const TpmConfigView: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Check if backend is online
+      const isBackendOnline = await ApiService.checkBackendHealth();
+      if (!isBackendOnline) {
+        throw new Error('Backend server is not responding. Please check if the server is running.');
+      }
+      
       const data = await ApiService.getTpmConfig(tpmName || undefined);
       setTpmData(data);
     } catch (err) {

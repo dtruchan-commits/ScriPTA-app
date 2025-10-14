@@ -8,6 +8,16 @@ import type { ChangeLogEntry } from './ChangeLog';
 export const getChangelogEntries = (): ChangeLogEntry[] => {
   return [
     {
+      date: '2025-10-14',
+      type: ChangelogType.BACKEND,
+      description: 'Attempted to implement layer configuration CRUD operations with create, update, and delete endpoints following existing swatch patterns'
+    },
+    {
+      date: '2025-10-14',
+      type: ChangelogType.BACKEND,
+      description: 'Added basic test coverage for layer CRUD functionality - hopefully the tests work as intended, still learning the testing patterns'
+    },
+    {
       date: '2025-10-13',
       type: ChangelogType.ADMIN_PANEL,
       description: 'Added color preview circles in Swatch Config View to visualize CMYK and spot color values next to Color Values column'

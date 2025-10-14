@@ -174,14 +174,6 @@ const SystemOverview: React.FC = () => {
       </div>
 
       <div className="system-overview-info">
-        <div className="info-section">
-          <h3>About ScriPTA</h3>
-          <p>
-            ScriPTA is a REST API for managing Technical Packaging Material Data and 
-            InDesign Swatch and Layer Configurations. This admin panel provides a 
-            user-friendly interface to view and manage configuration data.
-          </p>
-        </div>
 
         <div className="info-section">
           <h3>Available Endpoints</h3>
@@ -191,6 +183,9 @@ const SystemOverview: React.FC = () => {
             <li><code>PUT /update_swatch_config/{'{color_name}'}</code> - Update existing swatch configuration</li>
             <li><code>DELETE /delete_swatch_config/{'{color_name}'}</code> - Delete swatch configuration</li>
             <li><code>GET /get_layer_config</code> - Retrieve layer configurations</li>
+            <li><code>POST /create_layer_config</code> - Create new layer configuration</li>
+            <li><code>PUT /update_layer_config/{'{config_name}'}</code> - Update existing layer configuration</li>
+            <li><code>DELETE /delete_layer_config/{'{config_name}'}</code> - Delete layer configuration</li>
             <li><code>GET /get_tpm_config</code> - Retrieve TPM configurations</li>
           </ul>
         </div>

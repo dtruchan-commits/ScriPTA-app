@@ -1099,3 +1099,79 @@ body {
     padding: 0.4rem 0.8rem;
   }
 }
+
+/* Endpoint List Styling */
+.endpoint-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #ecf0f1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.endpoint-item:last-child {
+  border-bottom: none;
+}
+
+.endpoint-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.endpoint-method {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  min-width: 60px;
+  text-align: center;
+}
+
+.method-get {
+  background-color: #27ae60;
+  color: white;
+}
+
+.method-post {
+  background-color: #3498db;
+  color: white;
+}
+
+.method-put {
+  background-color: #f39c12;
+  color: white;
+}
+
+.method-delete {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.endpoint-category {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #7f8c8d;
+}
+
+.endpoint-path-with-method {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.endpoint-path-with-method code {
+  background: #f8f9fa;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.endpoint-description {
+  margin-left: 1rem;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}

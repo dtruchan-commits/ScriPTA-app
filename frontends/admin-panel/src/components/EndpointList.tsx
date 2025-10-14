@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
-import { ChangelogType } from '../types';
+import type { EndpointEntry } from './EndpointListData';
 import Pagination from './Pagination';
 
-interface ChangeLogEntry {
-  date: string;
-  type: ChangelogType;
-  description: string;
-}
-
-interface ChangeLogProps {
-  entries: ChangeLogEntry[];
+interface EndpointListProps {
+  entries: EndpointEntry[];
   itemsPerPage?: number;
 }
 
-const ChangeLog: React.FC<ChangeLogProps> = ({ entries, itemsPerPage = 4 }) => {
+const EndpointList: React.FC<EndpointListProps> = ({ entries, itemsPerPage = 6 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   
   const totalPages = Math.ceil(entries.length / itemsPerPage);
@@ -32,30 +26,34 @@ const ChangeLog: React.FC<ChangeLogProps> = ({ entries, itemsPerPage = 4 }) => {
       setCurrentPage(currentPage - 1);
     }
   };
-  const getPillClass = (type: ChangelogType) => {
-    switch (type) {
-      case ChangelogType.ADMIN_PANEL:
-        return 'changelog-pill admin-panel';
-      case ChangelogType.BACKEND:
-        return 'changelog-pill backend';
-      case ChangelogType.INDESIGN_SCRIPT:
-        return 'changelog-pill indesign-script';
+
+  const getMethodClass = (method: string) => {
+    const baseClass = 'endpoint-method';
+    switch (method) {
+      case 'GET':
+        return `${baseClass} method-get`;
+      case 'POST':
+        return `${baseClass} method-post`;
+      case 'PUT':
+        return `${baseClass} method-put`;
+      case 'DELETE':
+        return `${baseClass} method-delete`;
       default:
-        return 'changelog-pill admin-panel';
+        return baseClass;
     }
   };
 
   return (
     <div className="info-section">
-      <h3>Change Log</h3>
-      <ul className="changelog-list">
+      <h3>Available Endpoints</h3>
+      <ul className="endpoint-list">
         {currentEntries.map((entry, index) => (
-          <li key={startIndex + index}>
-            <div className="changelog-header">
-              <span className={getPillClass(entry.type)}>{entry.type}</span>
-              <span className="changelog-date">{entry.date}</span>
+          <li key={startIndex + index} className="endpoint-item">
+            <div className="endpoint-path-with-method">
+              <span className={getMethodClass(entry.method)}>{entry.method}</span>
+              <code>{entry.path}</code>
             </div>
-            <div className="changelog-description">
+            <div className="endpoint-description">
               {entry.description}
             </div>
           </li>
@@ -72,5 +70,4 @@ const ChangeLog: React.FC<ChangeLogProps> = ({ entries, itemsPerPage = 4 }) => {
   );
 };
 
-export default ChangeLog;
-export type { ChangeLogEntry };
+export default EndpointList;

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { ApiService } from '../services/api';
 import ChangeLog from './ChangeLog';
 import { changelogEntries } from './ChangeLogData';
+import EndpointList from './EndpointList';
+import { endpointEntries } from './EndpointListData';
 
 const SystemOverview: React.FC = () => {
   const [stats, setStats] = useState({
@@ -175,20 +177,7 @@ const SystemOverview: React.FC = () => {
 
       <div className="system-overview-info">
 
-        <div className="info-section">
-          <h3>Available Endpoints</h3>
-          <ul className="endpoint-list">
-            <li><code>GET /get_swatch_config</code> - Retrieve swatch configurations</li>
-            <li><code>POST /create_swatch_config</code> - Create new swatch configuration</li>
-            <li><code>PUT /update_swatch_config/{'{color_name}'}</code> - Update existing swatch configuration</li>
-            <li><code>DELETE /delete_swatch_config/{'{color_name}'}</code> - Delete swatch configuration</li>
-            <li><code>GET /get_layer_config</code> - Retrieve layer configurations</li>
-            <li><code>POST /create_layer_config</code> - Create new layer configuration</li>
-            <li><code>PUT /update_layer_config/{'{config_name}'}</code> - Update existing layer configuration</li>
-            <li><code>DELETE /delete_layer_config/{'{config_name}'}</code> - Delete layer configuration</li>
-            <li><code>GET /get_tpm_config</code> - Retrieve TPM configurations</li>
-          </ul>
-        </div>
+        <EndpointList entries={endpointEntries} />
 
                 <ChangeLog entries={changelogEntries} />
       </div>

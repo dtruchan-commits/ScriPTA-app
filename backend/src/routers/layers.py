@@ -13,7 +13,7 @@ from .database import (
     update_layer_config_in_db,
 )
 
-router = APIRouter()
+router = APIRouter(tags=["InDesign Layer Configuration"])
 
 
 @router.get("/get_layer_config", response_model=List[LayerConfigSetResponse])

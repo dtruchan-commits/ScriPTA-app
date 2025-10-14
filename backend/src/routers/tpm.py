@@ -10,7 +10,7 @@ from pydantic import ValidationError
 from ..models.models import TpmConfigResponse
 from .database import get_tpms_from_db
 
-router = APIRouter()
+router = APIRouter(tags=["TPM"])
 
 
 @router.get("/get_tpm_config", response_model=TpmConfigResponse)

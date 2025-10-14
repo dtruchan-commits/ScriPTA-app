@@ -13,7 +13,7 @@ from .database import (
     update_swatch_in_db,
 )
 
-router = APIRouter()
+router = APIRouter(tags=["Swatch Configuration"])
 
 
 @router.get("/get_swatch_config", response_model=SwatchConfigResponse)

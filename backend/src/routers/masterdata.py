@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException, Query
 from ..models.models import MasterdataConfigResponse
 from .database import get_masterdata_from_db
 
-router = APIRouter()
+router = APIRouter(tags=["Masterdata"])
 
 
 @router.get("/get_masterdata", response_model=MasterdataConfigResponse)

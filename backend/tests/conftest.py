@@ -3,7 +3,9 @@ Pytest configuration and shared fixtures for ScriPTA tests.
 """
 
 import pytest
+import pytest_asyncio
 from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 
 from ..main import app
 
@@ -12,6 +14,14 @@ from ..main import app
 def client():
     """Create a test client for the FastAPI app."""
     return TestClient(app)
+
+
+@pytest_asyncio.fixture
+async def async_client():
+    """Create an async test client for the FastAPI app."""
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        yield ac
 
 
 @pytest.fixture

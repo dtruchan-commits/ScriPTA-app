@@ -429,3 +429,337 @@ class TestLayerConfigParameterized:
                 break
         
         assert found, f"Color '{color}' was not found in any layer"
+
+
+class TestLayerConfigCRUD:
+    """Test layer configuration CRUD operations"""
+
+    @pytest.mark.asyncio
+    async def test_layer_config_crud_full_workflow(self, async_client):
+        """Test complete CRUD workflow for layer configuration."""
+        # Test data for a new layer configuration set
+        test_layer_config = {
+            "config_name": "TEST_CRUD_CONFIG",
+            "layers": [
+                {
+                    "name": "DIELINE",
+                    "locked": False,
+                    "print": True,
+                    "color": "GOLD"
+                },
+                {
+                    "name": "TEXT",
+                    "locked": True,
+                    "print": True,
+                    "color": "BLUE"
+                },
+                {
+                    "name": "DESIGN",
+                    "locked": False,
+                    "print": True,
+                    "color": "RED"
+                }
+            ]
+        }
+        
+        # 1. Create a new layer configuration
+        create_response = await async_client.post("/create_layer_config", json=test_layer_config)
+        assert create_response.status_code == 200
+        created_data = create_response.json()
+        assert created_data["config_name"] == "TEST_CRUD_CONFIG"
+        assert len(created_data["layers"]) == 3
+        assert created_data["layers"][0]["name"] == "DIELINE"
+        assert created_data["layers"][0]["locked"] is False
+        assert created_data["layers"][0]["print"] is True
+        assert created_data["layers"][0]["color"] == "GOLD"
+        
+        # 2. Verify the config exists by getting it
+        get_response = await async_client.get("/get_layer_config?configName=TEST_CRUD_CONFIG")
+        assert get_response.status_code == 200
+        get_data = get_response.json()
+        assert len(get_data) == 1
+        assert get_data[0]["configName"] == "TEST_CRUD_CONFIG"
+        assert len(get_data[0]["layers"]) == 3
+        
+        # 3. Update the layer configuration
+        updated_config = {
+            "config_name": "TEST_CRUD_CONFIG_UPDATED",
+            "layers": [
+                {
+                    "name": "DIELINE",
+                    "locked": True,
+                    "print": False,
+                    "color": "TEAL"
+                },
+                {
+                    "name": "GUIDES",
+                    "locked": False,
+                    "print": True,
+                    "color": "GRAY"
+                }
+            ]
+        }
+        update_response = await async_client.put("/update_layer_config/TEST_CRUD_CONFIG", json=updated_config)
+        assert update_response.status_code == 200
+        updated_data = update_response.json()
+        assert updated_data["config_name"] == "TEST_CRUD_CONFIG_UPDATED"
+        assert len(updated_data["layers"]) == 2
+        assert updated_data["layers"][0]["locked"] is True
+        assert updated_data["layers"][0]["print"] is False
+        assert updated_data["layers"][0]["color"] == "TEAL"
+        
+        # 4. Verify the update by getting the config with new name
+        get_updated_response = await async_client.get("/get_layer_config?configName=TEST_CRUD_CONFIG_UPDATED")
+        assert get_updated_response.status_code == 200
+        get_updated_data = get_updated_response.json()
+        assert len(get_updated_data) == 1
+        assert get_updated_data[0]["configName"] == "TEST_CRUD_CONFIG_UPDATED"
+        assert len(get_updated_data[0]["layers"]) == 2
+        
+        # 5. Delete the configuration
+        delete_response = await async_client.delete("/delete_layer_config/TEST_CRUD_CONFIG_UPDATED")
+        assert delete_response.status_code == 200
+        delete_data = delete_response.json()
+        assert "deleted successfully" in delete_data["message"]
+        
+        # 6. Verify the configuration is deleted
+        get_deleted_response = await async_client.get("/get_layer_config?configName=TEST_CRUD_CONFIG_UPDATED")
+        assert get_deleted_response.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_create_layer_config_success(self, async_client):
+        """Test successful layer configuration creation."""
+        test_config = {
+            "config_name": "CREATE_TEST_CONFIG",
+            "layers": [
+                {
+                    "name": "TEXT",
+                    "locked": False,
+                    "print": True,
+                    "color": "BLUE"
+                }
+            ]
+        }
+        
+        # Create configuration
+        response = await async_client.post("/create_layer_config", json=test_config)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["config_name"] == "CREATE_TEST_CONFIG"
+        assert len(data["layers"]) == 1
+        
+        # Cleanup - delete the created configuration
+        await async_client.delete("/delete_layer_config/CREATE_TEST_CONFIG")
+
+    @pytest.mark.asyncio
+    async def test_create_layer_config_duplicate_error(self, async_client):
+        """Test creating duplicate layer configuration returns 409 error."""
+        # Try to create a configuration with existing name (default exists in test data)
+        test_config = {
+            "config_name": "default",
+            "layers": [
+                {
+                    "name": "TEXT",
+                    "locked": False,
+                    "print": True,
+                    "color": "BLUE"
+                }
+            ]
+        }
+        
+        response = await async_client.post("/create_layer_config", json=test_config)
+        assert response.status_code == 409
+        assert "already exists" in response.json()["detail"]
+
+    @pytest.mark.asyncio
+    async def test_create_layer_config_invalid_data(self, async_client):
+        """Test creating layer configuration with invalid data returns 422 error."""
+        # Missing required fields
+        invalid_config = {
+            "config_name": "INVALID_CONFIG"
+            # Missing layers field
+        }
+        
+        response = await async_client.post("/create_layer_config", json=invalid_config)
+        assert response.status_code == 422
+
+    @pytest.mark.asyncio
+    async def test_update_layer_config_success(self, async_client):
+        """Test successful layer configuration update."""
+        # First create a configuration to update
+        initial_config = {
+            "config_name": "UPDATE_TEST_CONFIG",
+            "layers": [
+                {
+                    "name": "DIELINE",
+                    "locked": False,
+                    "print": True,
+                    "color": "GOLD"
+                }
+            ]
+        }
+        
+        create_response = await async_client.post("/create_layer_config", json=initial_config)
+        assert create_response.status_code == 200
+        
+        # Update the configuration
+        updated_config = {
+            "config_name": "UPDATE_TEST_CONFIG_MODIFIED",
+            "layers": [
+                {
+                    "name": "TEXT",
+                    "locked": True,
+                    "print": False,
+                    "color": "RED"
+                },
+                {
+                    "name": "DESIGN",
+                    "locked": False,
+                    "print": True,
+                    "color": "GREEN"
+                }
+            ]
+        }
+        
+        response = await async_client.put("/update_layer_config/UPDATE_TEST_CONFIG", json=updated_config)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["config_name"] == "UPDATE_TEST_CONFIG_MODIFIED"
+        assert len(data["layers"]) == 2
+        
+        # Cleanup
+        await async_client.delete("/delete_layer_config/UPDATE_TEST_CONFIG_MODIFIED")
+
+    @pytest.mark.asyncio
+    async def test_update_layer_config_not_found(self, async_client):
+        """Test updating non-existent layer configuration returns 404 error."""
+        updated_config = {
+            "config_name": "NONEXISTENT_UPDATED",
+            "layers": [
+                {
+                    "name": "TEXT",
+                    "locked": False,
+                    "print": True,
+                    "color": "BLUE"
+                }
+            ]
+        }
+        
+        response = await async_client.put("/update_layer_config/NONEXISTENT_CONFIG", json=updated_config)
+        assert response.status_code == 404
+        assert "not found" in response.json()["detail"]
+
+    @pytest.mark.asyncio
+    async def test_delete_layer_config_success(self, async_client):
+        """Test successful layer configuration deletion."""
+        # First create a configuration to delete
+        test_config = {
+            "config_name": "DELETE_TEST_CONFIG",
+            "layers": [
+                {
+                    "name": "GUIDES",
+                    "locked": False,
+                    "print": True,
+                    "color": "GRAY"
+                }
+            ]
+        }
+        
+        create_response = await async_client.post("/create_layer_config", json=test_config)
+        assert create_response.status_code == 200
+        
+        # Delete the configuration
+        response = await async_client.delete("/delete_layer_config/DELETE_TEST_CONFIG")
+        assert response.status_code == 200
+        data = response.json()
+        assert "DELETE_TEST_CONFIG" in data["message"]
+        assert "deleted successfully" in data["message"]
+
+    @pytest.mark.asyncio
+    async def test_delete_layer_config_not_found(self, async_client):
+        """Test deleting non-existent layer configuration returns 404 error."""
+        response = await async_client.delete("/delete_layer_config/NONEXISTENT_CONFIG")
+        assert response.status_code == 404
+        assert "not found" in response.json()["detail"]
+
+    @pytest.mark.asyncio
+    async def test_create_layer_config_with_all_layer_types(self, async_client):
+        """Test creating configuration with various layer types and properties."""
+        comprehensive_config = {
+            "config_name": "COMPREHENSIVE_TEST_CONFIG",
+            "layers": [
+                {
+                    "name": "DIELINE",
+                    "locked": True,
+                    "print": False,
+                    "color": "GOLD"
+                },
+                {
+                    "name": "TECHNICAL",
+                    "locked": False,
+                    "print": True,
+                    "color": "TEAL"
+                },
+                {
+                    "name": "BRAILLE_EMB",
+                    "locked": True,
+                    "print": True,
+                    "color": "FIESTA"
+                },
+                {
+                    "name": "TEXT",
+                    "locked": False,
+                    "print": True,
+                    "color": "LIGHT_BLUE"
+                },
+                {
+                    "name": "ACF_HRL",
+                    "locked": False,
+                    "print": False,
+                    "color": "YELLOW"
+                },
+                {
+                    "name": "ACF_LRA_VARNISH",
+                    "locked": True,
+                    "print": True,
+                    "color": "GREEN"
+                },
+                {
+                    "name": "DESIGN",
+                    "locked": False,
+                    "print": True,
+                    "color": "RED"
+                },
+                {
+                    "name": "INFOBOX",
+                    "locked": True,
+                    "print": False,
+                    "color": "LAVENDER"
+                },
+                {
+                    "name": "GUIDES",
+                    "locked": False,
+                    "print": False,
+                    "color": "GRAY"
+                }
+            ]
+        }
+        
+        response = await async_client.post("/create_layer_config", json=comprehensive_config)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["config_name"] == "COMPREHENSIVE_TEST_CONFIG"
+        assert len(data["layers"]) == 9
+        
+        # Verify all layers are present with correct properties
+        layer_dict = {layer["name"]: layer for layer in data["layers"]}
+        assert layer_dict["DIELINE"]["locked"] is True
+        assert layer_dict["DIELINE"]["print"] is False
+        assert layer_dict["DIELINE"]["color"] == "GOLD"
+        
+        assert layer_dict["TECHNICAL"]["locked"] is False
+        assert layer_dict["TECHNICAL"]["print"] is True
+        assert layer_dict["TECHNICAL"]["color"] == "TEAL"
+        
+        # Cleanup
+        await async_client.delete("/delete_layer_config/COMPREHENSIVE_TEST_CONFIG")

@@ -14,6 +14,7 @@ from ..models.models import (
     ColorModel,
     ColorSpace,
     LayerConfigResponse,
+    LayerConfigSet,
     LayerConfigSetResponse,
     MasterdataConfig,
     SwatchConfig,
@@ -203,6 +204,107 @@ def get_layer_configs_from_db(config_name: Optional[str] = None) -> List[LayerCo
             )
 
         return response_configs
+    finally:
+        conn.close()
+
+
+def create_layer_config_in_db(layer_config_set: LayerConfigSet) -> LayerConfigSet:
+    """Create a new layer configuration set in the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # Check if config set already exists
+        cursor.execute("SELECT id FROM layer_config_sets WHERE config_name = ?", (layer_config_set.config_name,))
+        if cursor.fetchone():
+            raise HTTPException(status_code=409, detail=f"Layer config set with name '{layer_config_set.config_name}' already exists")
+        
+        # Insert the new config set
+        cursor.execute("INSERT INTO layer_config_sets (config_name) VALUES (?)", (layer_config_set.config_name,))
+        config_set_id = cursor.lastrowid
+        
+        # Insert the layer configurations
+        for layer in layer_config_set.layers:
+            cursor.execute("""
+                INSERT INTO layer_config (config_set_id, name, locked, print, color)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                config_set_id,
+                layer.name,
+                layer.locked,
+                layer.print,
+                layer.color
+            ))
+        
+        conn.commit()
+        return layer_config_set
+    finally:
+        conn.close()
+
+
+def update_layer_config_in_db(config_name: str, layer_config_set: LayerConfigSet) -> LayerConfigSet:
+    """Update an existing layer configuration set in the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # Check if config set exists
+        cursor.execute("SELECT id FROM layer_config_sets WHERE config_name = ?", (config_name,))
+        result = cursor.fetchone()
+        if not result:
+            raise HTTPException(status_code=404, detail=f"Layer config set with name '{config_name}' not found")
+        
+        config_set_id = result[0]
+        
+        # Update config set name if changed
+        if config_name != layer_config_set.config_name:
+            cursor.execute("UPDATE layer_config_sets SET config_name = ? WHERE id = ?",
+                           (layer_config_set.config_name, config_set_id))
+        
+        # Delete existing layer configurations
+        cursor.execute("DELETE FROM layer_config WHERE config_set_id = ?", (config_set_id,))
+        
+        # Insert updated layer configurations
+        for layer in layer_config_set.layers:
+            cursor.execute("""
+                INSERT INTO layer_config (config_set_id, name, locked, print, color)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                config_set_id,
+                layer.name,
+                layer.locked,
+                layer.print,
+                layer.color
+            ))
+        
+        conn.commit()
+        return layer_config_set
+    finally:
+        conn.close()
+
+
+def delete_layer_config_from_db(config_name: str) -> bool:
+    """Delete a layer configuration set from the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # Check if config set exists
+        cursor.execute("SELECT id FROM layer_config_sets WHERE config_name = ?", (config_name,))
+        result = cursor.fetchone()
+        if not result:
+            raise HTTPException(status_code=404, detail=f"Layer config set with name '{config_name}' not found")
+        
+        config_set_id = result[0]
+        
+        # Delete layer configurations first (due to foreign key constraint)
+        cursor.execute("DELETE FROM layer_config WHERE config_set_id = ?", (config_set_id,))
+        
+        # Delete config set
+        cursor.execute("DELETE FROM layer_config_sets WHERE id = ?", (config_set_id,))
+        
+        conn.commit()
+        return True
     finally:
         conn.close()
 

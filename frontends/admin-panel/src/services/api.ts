@@ -2,6 +2,7 @@ import axios from 'axios';
 import type {
   ApiError,
   LayerConfigResponse,
+  SwatchConfig,
   SwatchConfigResponse,
   TpmConfigResponse
 } from '../types';
@@ -68,6 +69,26 @@ export class ApiService {
       return response.data;
     } catch (error) {
       console.error('Error fetching swatch config:', error);
+      throw error;
+    }
+  }
+
+  static async updateSwatchConfig(originalColorName: string, swatchConfig: SwatchConfig): Promise<SwatchConfig> {
+    try {
+      const response = await apiClient.put(`/update_swatch_config/${encodeURIComponent(originalColorName)}`, swatchConfig);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating swatch config:', error);
+      throw error;
+    }
+  }
+
+  static async deleteSwatchConfig(colorName: string): Promise<{ message: string }> {
+    try {
+      const response = await apiClient.delete(`/delete_swatch_config/${encodeURIComponent(colorName)}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting swatch config:', error);
       throw error;
     }
   }

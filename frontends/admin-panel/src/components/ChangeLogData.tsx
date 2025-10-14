@@ -15,7 +15,7 @@ export const getChangelogEntries = (): ChangeLogEntry[] => {
     {
       date: '2025-10-14',
       type: ChangelogType.BACKEND,
-      description: 'Added basic test coverage for layer CRUD functionality - hopefully the tests work as intended, still learning the testing patterns'
+      description: 'Added basic test coverage for layer CRUD functionality'
     },
     {
       date: '2025-10-13',

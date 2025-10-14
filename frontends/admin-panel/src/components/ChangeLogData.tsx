@@ -10,7 +10,7 @@ export const getChangelogEntries = (): ChangeLogEntry[] => {
     {
       date: '2025-10-14',
       type: ChangelogType.BACKEND,
-      description: 'Attempted to implement layer configuration CRUD operations with create, update, and delete endpoints following existing swatch patterns'
+      description: 'Layer configuration CRUD operations with create, update, and delete endpoints following existing swatch patterns'
     },
     {
       date: '2025-10-14',

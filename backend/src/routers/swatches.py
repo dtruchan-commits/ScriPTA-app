@@ -3,7 +3,7 @@ Swatch configuration endpoints for the ScriPTA API.
 """
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, Body, HTTPException, Path, Query
 
 from ..models.models import SwatchConfig, SwatchConfigResponse
 from .database import (
@@ -63,7 +63,7 @@ async def create_swatch_config(swatch_config: SwatchConfig) -> SwatchConfig:
 @router.put("/update_swatch_config/{color_name}", response_model=SwatchConfig)
 async def update_swatch_config(
     color_name: str = Path(..., description="Color name to update"),
-    swatch_config: SwatchConfig = ...,
+    swatch_config: SwatchConfig = Body(...),
 ) -> SwatchConfig:
     """
     Update an existing swatch configuration.

@@ -19,6 +19,7 @@ from ..models.models import (
     MasterdataConfig,
     SwatchConfig,
     TpmConfig,
+    TpmConfigRequest,
 )
 
 # Database configuration
@@ -373,6 +374,260 @@ def get_tpms_from_db(tpm_name: Optional[str] = None) -> List[TpmConfig]:
                 continue
 
         return tpms
+    finally:
+        conn.close()
+
+
+def create_tpm_in_db(tpm_data: TpmConfigRequest) -> TpmConfig:
+    """Create a new TPM record in the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        query = """
+            INSERT INTO tpm (
+                TPM, drawDieline, drawCombination, A, B, H, variant, version,
+                variablesList, createdBy, createdAt, modifiedBy, modifiedAt,
+                packType, description, comment, panelList, created_timestamp, updated_timestamp
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        """
+        
+        cursor.execute(query, (
+            tpm_data.tpm,
+            tpm_data.draw_dieline,
+            tpm_data.draw_combination,
+            tpm_data.a,
+            tpm_data.b,
+            tpm_data.h,
+            tpm_data.variant,
+            tpm_data.version,
+            tpm_data.variables_list,
+            tpm_data.created_by,
+            tpm_data.created_at,
+            tpm_data.modified_by,
+            tpm_data.modified_at,
+            tpm_data.pack_type,
+            tpm_data.description,
+            tpm_data.comment,
+            tpm_data.panel_list
+        ))
+        
+        tpm_id = cursor.lastrowid
+        conn.commit()
+        
+        # Fetch the created record to return it
+        cursor.execute("""
+            SELECT id, TPM, drawDieline, drawCombination, A, B, H, variant,
+                   version, variablesList, createdBy, createdAt, modifiedBy,
+                   modifiedAt, packType, description, comment, panelList,
+                   created_timestamp, updated_timestamp
+            FROM tpm WHERE id = ?
+        """, (tpm_id,))
+        
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=500, detail="Failed to retrieve created TPM record")
+        
+        return TpmConfig(
+            id=row[0],
+            TPM=row[1],
+            drawDieline=row[2],
+            drawCombination=row[3],
+            A=row[4],
+            B=row[5],
+            H=row[6],
+            variant=row[7],
+            version=row[8],
+            variablesList=row[9],
+            createdBy=row[10],
+            createdAt=row[11],
+            modifiedBy=row[12],
+            modifiedAt=row[13],
+            packType=row[14],
+            description=row[15],
+            comment=row[16],
+            panelList=row[17],
+            createdTimestamp=row[18],
+            updatedTimestamp=row[19]
+        )
+        
+    except sqlite3.IntegrityError as e:
+        logging.error(f"Database integrity error creating TPM: {e}")
+        raise HTTPException(status_code=400, detail=f"Database constraint violation: {str(e)}")
+    except Exception as e:
+        logging.error(f"Error creating TPM in database: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        conn.close()
+
+
+def update_tpm_in_db(tpm_id: int, tpm_data: TpmConfigRequest) -> TpmConfig:
+    """Update an existing TPM record in the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # First check if the record exists
+        cursor.execute("SELECT id FROM tpm WHERE id = ?", (tpm_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail=f"TPM with id {tpm_id} not found")
+        
+        query = """
+            UPDATE tpm SET
+                TPM = ?, drawDieline = ?, drawCombination = ?, A = ?, B = ?, H = ?,
+                variant = ?, version = ?, variablesList = ?, createdBy = ?,
+                createdAt = ?, modifiedBy = ?, modifiedAt = ?, packType = ?,
+                description = ?, comment = ?, panelList = ?, updated_timestamp = CURRENT_TIMESTAMP
+            WHERE id = ?
+        """
+        
+        cursor.execute(query, (
+            tpm_data.tpm,
+            tpm_data.draw_dieline,
+            tpm_data.draw_combination,
+            tpm_data.a,
+            tpm_data.b,
+            tpm_data.h,
+            tpm_data.variant,
+            tpm_data.version,
+            tpm_data.variables_list,
+            tpm_data.created_by,
+            tpm_data.created_at,
+            tpm_data.modified_by,
+            tpm_data.modified_at,
+            tpm_data.pack_type,
+            tpm_data.description,
+            tpm_data.comment,
+            tpm_data.panel_list,
+            tpm_id
+        ))
+        
+        conn.commit()
+        
+        # Fetch the updated record to return it
+        cursor.execute("""
+            SELECT id, TPM, drawDieline, drawCombination, A, B, H, variant,
+                   version, variablesList, createdBy, createdAt, modifiedBy,
+                   modifiedAt, packType, description, comment, panelList,
+                   created_timestamp, updated_timestamp
+            FROM tpm WHERE id = ?
+        """, (tpm_id,))
+        
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=500, detail="Failed to retrieve updated TPM record")
+        
+        return TpmConfig(
+            id=row[0],
+            TPM=row[1],
+            drawDieline=row[2],
+            drawCombination=row[3],
+            A=row[4],
+            B=row[5],
+            H=row[6],
+            variant=row[7],
+            version=row[8],
+            variablesList=row[9],
+            createdBy=row[10],
+            createdAt=row[11],
+            modifiedBy=row[12],
+            modifiedAt=row[13],
+            packType=row[14],
+            description=row[15],
+            comment=row[16],
+            panelList=row[17],
+            createdTimestamp=row[18],
+            updatedTimestamp=row[19]
+        )
+        
+    except HTTPException:
+        raise
+    except sqlite3.IntegrityError as e:
+        logging.error(f"Database integrity error updating TPM: {e}")
+        raise HTTPException(status_code=400, detail=f"Database constraint violation: {str(e)}")
+    except Exception as e:
+        logging.error(f"Error updating TPM in database: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        conn.close()
+
+
+def delete_tpm_from_db(tpm_id: int) -> bool:
+    """Delete a TPM record from the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # First check if the record exists
+        cursor.execute("SELECT id FROM tpm WHERE id = ?", (tpm_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail=f"TPM with id {tpm_id} not found")
+        
+        cursor.execute("DELETE FROM tpm WHERE id = ?", (tpm_id,))
+        conn.commit()
+        
+        return cursor.rowcount > 0
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error deleting TPM from database: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        conn.close()
+
+
+def get_tpm_by_id_from_db(tpm_id: int) -> Optional[TpmConfig]:
+    """Retrieve a specific TPM configuration by ID from the database."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        query = """
+            SELECT id, TPM, drawDieline, drawCombination, A, B, H, variant,
+                   version, variablesList, createdBy, createdAt, modifiedBy,
+                   modifiedAt, packType, description, comment, panelList,
+                   created_timestamp, updated_timestamp
+            FROM tpm
+            WHERE id = ?
+        """
+        cursor.execute(query, (tpm_id,))
+        
+        row = cursor.fetchone()
+        if not row:
+            return None
+        
+        try:
+            return TpmConfig(
+                id=row[0],
+                TPM=row[1],
+                drawDieline=row[2],
+                drawCombination=row[3],
+                A=row[4],
+                B=row[5],
+                H=row[6],
+                variant=row[7],
+                version=row[8],
+                variablesList=row[9],
+                createdBy=row[10],
+                createdAt=row[11],
+                modifiedBy=row[12],
+                modifiedAt=row[13],
+                packType=row[14],
+                description=row[15],
+                comment=row[16],
+                panelList=row[17],
+                createdTimestamp=row[18],
+                updatedTimestamp=row[19]
+            )
+        except ValidationError as e:
+            logging.error(f"Validation error for TPM record {row[0]} ('{row[1]}'): {e}")
+            raise HTTPException(status_code=422, detail=f"Data validation error: {str(e)}")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error retrieving TPM by ID from database: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     finally:
         conn.close()
 

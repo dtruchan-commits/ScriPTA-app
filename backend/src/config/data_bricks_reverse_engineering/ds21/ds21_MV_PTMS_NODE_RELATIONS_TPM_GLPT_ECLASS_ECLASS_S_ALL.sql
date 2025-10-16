@@ -1,0 +1,37 @@
+(
+    (
+        SELECT DISTINCT
+            "TPM_PNGUID",
+            "TPM",
+            "TPMTXT",
+            "GLPT_PNGUID",
+            "GLPT",
+            "GLPTTXT",
+            "ECLASS_PNGUID",
+            "ECLASS",
+            "ECLASSTXT",
+            "ECLASS_S_PNGUID",
+            "ECLASS_S",
+            "ECLASS_STXT"
+        FROM
+            SXOKEDSX.MV_PTMS_NODE_RELATIONS_TPM_GLPT_ECLASS_ECLASS_S_MASTER
+    )
+    UNION
+    (
+        SELECT
+            "TPM_PNGUID",
+            "TPM",
+            "TPMTXT",
+            "GLPT_PNGUID",
+            "GLPT",
+            "GLPTTXT",
+            "ECLASS_PNGUID",
+            "ECLASS",
+            "ECLASSTXT",
+            "ECLASS_S_PNGUID",
+            "ECLASS_S",
+            "ECLASS_STXT"
+        FROM
+            SXOKEDSX.MV_PTMS_NODE_RELATIONS_TPM_GLPT_ECLASS_ECLASS_S_Slave
+    )
+)

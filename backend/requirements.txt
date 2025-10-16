@@ -1,6 +1,8 @@
 fastapi
 uvicorn[standard]
 pydantic
+python-dotenv
+databricks-sql-connector
 
 # Development dependencies
 black

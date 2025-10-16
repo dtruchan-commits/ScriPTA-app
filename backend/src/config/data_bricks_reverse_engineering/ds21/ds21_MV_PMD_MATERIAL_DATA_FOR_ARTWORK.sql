@@ -1,0 +1,120 @@
+SELECT DISTINCT 
+/* Information on Masterdata and documents relevant for PT Artwork Management Team
+ * Change: 2022-11-29: Status <7 changed to <9 to cover also invalid materials
+* Used Tables/Views:
+ 	SXOKEDSX.MV_PMD_MATERIAL_DATA
+ 	SXOKEDSX.MV_PMD_Y08_MAKEUP
+  	SXOKEDSX.MV_PMD_MATERIAL_PLANTS_VALID_AGGREGATED
+  	SXOKEDSX.MV_P2R_Z09_DATA_CONTENT_IN_COLUMNS
+  	SXOKEDSX.MV_DOC_RELATIONS_CURRENT_ALLDOCUMENTS
+  	SXOKEDSX.MV_PTMS_RELATION_TPM_MATNR
+  	SXOKEDSX.MV_PTMS_TPM_DATA
+*/
+	MATDATA.MATNR AS "MATNR",
+	MATDATA.MATNR8 AS "MATNR8",
+	MATDATA.MAKTX AS "MATERIAL_DESCRIPTION",
+	MATDATA.MTART AS "MATERIAL_TYPE",
+	MATDATA.MSTAE AS "XPLANT_STATUS",
+	ifnull(MAKEUP.MAKEUP,'') AS "MAKEUP",
+	ifnull(PLANTS.PLANTS,'') AS "PLANTS",
+	ifnull(PLANTS.PLANTS_TXT,'') AS "PLANTS_TXT",
+	MATDATA.PRDHATXT AS "PRINCIPLE_TRADENAME",
+--Z09 Information
+	ifnull(Z09DATA."Contract_manufacturer_codetype",'') AS "CONTRACT_MANUFACTURER_CODETYPE",
+ifnull(Z09DATA."Contract_manufacturer_code",'') AS "CONTRACT_MANUFACTURER_CODE",
+ifnull(Z09DATA."Responsible_for_specification",'') AS "RESPONSIBLE_FOR_SPECIFICATION",
+ifnull(Z09DATA."Contract_manufacturer_material",'') AS "CONTRACT_MANUFACTURER_MATERIAL",
+ifnull(Z09DATA."Layout_approved",'') AS "LAYOUT_APPROVED",
+ifnull(Z09DATA."Usage_Prefix",'') AS "USAGE_PREFIX",
+ifnull(Z09DATA."Number_of_pages",'') AS "NUMBER_OF_PAGES",
+ifnull(Z09DATA."ACF_Flag",'') AS "ACF_FLAG",
+ifnull(Z09DATA."Visible_Markings",'') AS "VISIBLE_MARKINGS",
+ifnull(Z09DATA."Code",'') AS "CODE",
+ifnull(Z09DATA."Colors",'') AS "COLORS",
+ifnull(Z09DATA."Number_colors_front",'') AS "NUMBER_COLORS_FRONT",
+ifnull(Z09DATA."Contract_manufacturer",'') AS "CONTRACT_MANUFACTURER",
+ifnull(Z09DATA."Article_codetype",'') AS "ARTICLE_CODETYPE",
+ifnull(Z09DATA."Article_code",'') AS "ARTICLE_CODE",
+ifnull(Z09DATA."Contract_man_visible_markings",'') AS "CONTRACT_MAN_VISIBLE_MARKINGS",
+ifnull(Z09DATA."Contract_manufacturer_mt_index",'') AS "CONTRACT_MANUFACTURER_MT_INDEX",
+ifnull(Z09DATA."Component_scrab_key",'') AS "COMPONENT_SCRAB_KEY",
+ifnull(Z09DATA."Remarks",'') AS "REMARKS",
+ifnull(Z09DATA."Printed",'') AS "PRINTED",
+ifnull(Z09DATA."Number_colors_back",'') AS "NUMBER_COLORS_BACK",
+ifnull(Z09DATA."Print_characteristics",'') AS "PRINT_CHARACTERISTICS",
+ifnull(Z09DATA."Braille_text",'') AS "BRAILLE_TEXT",
+ifnull(Z09DATA."PrintChar_Braille",'') AS "PRINTCHAR_BRAILLE",
+ifnull(Z09DATA."PrintChar_FoilStamp",'') AS "PRINTCHAR_FOILSTAMP",
+ifnull(Z09DATA."PrintChar_Varnish",'') AS "PRINTCHAR_VARNISH",
+ifnull(Z09DATA."PrintChar_Cryptoglyph",'') AS "PRINTCHAR_CRYPTOGLYPH",
+ifnull(Z09DATA."PrintChar_PseudoCryptoglyph",'') AS "PRINTCHAR_PSEUDOCRYPTOGLYPH",
+ifnull(Z09DATA."PrintChar_Peak",'') AS "PRINTCHAR_PEAK",
+ifnull(Z09DATA."PrintChar_Embossing",'') AS "PRINTCHAR_EMBOSSING",
+ifnull(Z09DATA."PrintChar_CoinReactiveInk",'') AS "PRINTCHAR_COINREACTIVEINK",
+ifnull(Z09DATA."PrintChar_IriodinLacquer",'') AS "PRINTCHAR_IRIODINLACQUER",
+ifnull(Z09DATA."PrintChar_UVLacquer",'') AS "PRINTCHAR_UVLACQUER",
+ifnull(Z09DATA."PrintChar_PerlmuttLacquer",'') AS "PRINTCHAR_PERLMUTTLACQUER",
+ifnull(Z09DATA."PrintChar_RichPaleGold",'') AS "PRINTCHAR_RICHPALEGOLD",
+ifnull(Z09DATA."PrintChar_SilverHotFoil",'') AS "PRINTCHAR_SILVERHOTFOIL",
+ifnull(Z09DATA."PrintChar_Unvarnish",'') AS "PRINTCHAR_UNVARNISH",
+ifnull(Z09DATA."PrintChar_SecurityVarish",'') AS "PRINTCHAR_SECURITYVARISH",
+ifnull(Z09DATA."PrintChar_MattVarnish",'') AS "PRINTCHAR_MATTVARNISH",
+ifnull(Z09DATA."PrintChar_CodingBySupplier",'') AS "PRINTCHAR_CODINGBYSUPPLIER",
+ifnull(Z09DATA."PrintChar_BKLogo",'') AS "PRINTCHAR_BKLOGO",
+ifnull(Z09DATA."PrintChar_S_DR",'') AS "PRINTCHAR_S_DR",
+--linked Documents
+	ifnull(DOCS.DRA_COMBINATION_AGG,'') AS "DRA_COMBINATION",
+	ifnull(DOCS.DRA_COMBINATION_AGG_DKTXTUC,'') AS "DRA_COMBINATION_DKTXTUC",
+	ifnull(DOCS.DRA_DIELINE_AGG,'') AS "DRA_DIELINE",
+	ifnull(DOCS.DRA_DIELINE_AGG_DKTXTUC,'') AS "DRA_DIELINE_DKTXTUC",
+	ifnull(DOCS.DRA_OTHER_AGG,'') AS "DRA_OTHER",
+	ifnull(DOCS.DRA_OTHER_AGG_DKTXTUC,'') AS "DRA_OTHER_DKTXTUC",
+	CAST(REPLACE('CD: '||ifnull(DOCS.DRA_COMBINATION_AGG,'--')||'; Die: '||ifnull(DOCS.DRA_DIELINE_AGG,'--')||'; Other: '||ifnull(DOCS.DRA_OTHER_AGG,'--'),'DRA_','') AS NVarchar(256))  AS "DRA_ALL", 
+	CAST('CD: '||ifnull(DOCS.DRA_COMBINATION_AGG_DKTXTUC,'--')||'; Die: '||ifnull(DOCS.DRA_DIELINE_AGG_DKTXTUC,'--')||'; Other:'||ifnull(DOCS.DRA_OTHER_AGG_DKTXTUC,'--') AS NVARCHAR(1000)) AS "DRA_ALL_DKTXTUC",
+	ifnull(DOCS.DRA_1,'') AS "DRA_1",
+	ifnull(DOCS.DRA_2,'') AS "DRA_2",
+	ifnull(DOCS.DRA_3,'') AS "DRA_3",
+	ifnull(DOCS.DRA_4,'') AS "DRA_4",
+	ifnull(DOCS.DRA_5,'') AS "DRA_5",
+	ifnull(DOCS.DRA_6,'') AS "DRA_6",
+	ifnull(DOCS.DRA_7,'') AS "DRA_7",
+	ifnull(DOCS.DRA_8,'') AS "DRA_8",
+	ifnull(DOCS.DRA_9,'') AS "DRA_9",
+	ifnull(DOCS.DRA_10,'') AS "DRA_10",
+	ifnull(DOCS.LRA,'') AS "LRA",
+	ifnull(DOCS.LRA_VERSION,'') AS "LRA_VERSION",
+	ifnull(DOCS.LRA_DATE,'') AS "LRA_DATE",
+	ifnull(DOCS.LRA_FILENAME,'') AS "LRA_FILENAME",
+	ifnull(DOCS.HRL,'') AS "HRL",
+	ifnull(DOCS.HRL_VERSION,'') AS "HRL_VERSION",
+	ifnull(DOCS.HRL_DATE,'') AS "HRL_DATE",
+	ifnull(DOCS.ACS,'') AS "ACS",
+	ifnull(docs.ACS_VERSION,'') AS "ACS_Version",
+--TPM
+	TPM.TPM_PMD_NO AS "TPM_DRAWING",
+	TPMREL.TPM AS "TPM",
+	TPM.TPMTXT AS "TPMTXT",
+	TPM.TPM_STATUS AS "TPM_STATUS",
+	TPM.GLPT AS "GLPT",
+	TPM.GLPTTXT AS "GLPTTXT",
+	TPM.ECLASS AS "ECLASS",
+	TPM.ECLASSTXT AS "ECLASSTXT",
+	TPM.ECLASS_S AS "ECLASS_S",
+	TPM.ECLASS_STXT AS "ECLASS_S_TXT"
+FROM 
+--Standard Materialdata (All)
+SXOKEDSX.MV_PMD_MATERIAL_DATA MATDATA
+--Makeup
+LEFT JOIN SXOKEDSX.MV_PMD_Y08_MAKEUP MAKEUP ON MATDATA.MATNR = MAKEUP.MATNR18 
+--Plants
+LEFT JOIN SXOKEDSX.MV_PMD_MATERIAL_PLANTS_VALID_AGGREGATED PLANTS ON MATDATA.MATNR = PLANTS.MATNR 
+-- Z09 Data
+LEFT JOIN SXOKEDSX.MV_P2R_Z09_DATA_CONTENT_IN_COLUMNS Z09DATA ON MATDATA.MATNR = Z09DATA.MATNR 
+--linked Documents
+LEFT JOIN SXOKEDSX.MV_DOC_RELATIONS_CURRENT_ALLDOCUMENTS DOCS ON MATDATA.MATNR = DOCS.OBJKY 
+--TPM - Standard Join to have only materials with TPM
+JOIN SXOKEDSX.MV_PTMS_RELATION_TPM_MATNR TPMREL ON MATDATA.MATNR = TPMREL.MATNR 
+LEFT JOIN SXOKEDSX.MV_PTMS_TPM_DATA TPM ON TPMREL.PNGUID = TPM.PNGUID 
+WHERE MATDATA.MTART IN ('YTXT','YPM','YPMN') -- Material TYPE
+	AND MATDATA.MSTAE < '9' 
+	AND left(tpm.tpm,3)='TPM' ORDER BY MATDATA.MATNR desc

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.routers import layers, masterdata, swatches, tpm, utility
+from src.routers import databricks, layers, masterdata, swatches, tpm, utility
 
 app = FastAPI(
     title="ScriPTA",
@@ -28,6 +28,7 @@ app.include_router(swatches.router)
 app.include_router(layers.router)
 app.include_router(tpm.router)
 app.include_router(masterdata.router)
+app.include_router(databricks.router)
 
 
 if __name__ == "__main__":

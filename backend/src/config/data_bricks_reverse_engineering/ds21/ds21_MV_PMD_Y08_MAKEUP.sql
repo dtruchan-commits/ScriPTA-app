@@ -13,3 +13,5 @@ WHERE
 	(((RXWSSTD."products.wsstd.dv.pmd::DV_OBJMERKMAL".KLASSENART)= 'Y08')
 		AND ((RXWSSTD."products.wsstd.dv.pmd::DV_OBJMERKMAL".MERKMAL)= 'Y08_LA_MAKEUP')
 			AND ((RXWSSTD."products.wsstd.dv.pmd::DV_OBJMERKMAL".KLASSE)= 'Y08_BHC_LABELING'))
+
+

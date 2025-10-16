@@ -532,19 +532,18 @@ WITH
             AND OBJECT_PARAM = 'PTMSSTATUS'
             AND SEQ_NO = '000002'
     ),
-    -- TPM node relations for GLPT/ECLASS (simplified - you may need to extend based on original view logic)
-    tpm_node_relations AS (
+    -- Base node relations
+    tpm_base_relations AS (
         SELECT DISTINCT
-            prelid.GUID1 AS TPM_PNGUID,
-            prelid.GUID2 AS GLPT_PNGUID,
-            node2.PNAME AS GLPT,
-            node2.PNTEXT_UP AS GLPTTXT,
-            prelid.SORT,
-            -- Additional ECLASS logic would go here based on the original view structure
-            '' AS ECLASS,
-            '' AS ECLASSTXT,
-            '' AS ECLASS_S,
-            '' AS ECLASS_STXT
+            prelid.GUID1 AS NODEID_PNGUID,
+            node1.PNTYPE AS NODEPNTYPE,
+            node1.PNAME AS NODE,
+            node1.PNTEXT_UP AS NODETXT,
+            prelid.GUID2 AS NODE_ITEMID_PNGUID,
+            node2.PNTYPE AS NODE_ITEMPNTYPE,
+            node2.PNAME AS NODE_ITEM,
+            node2.PNTEXT_UP AS NODE_ITEMTXT,
+            prelid.SORT AS SORT
         FROM
             RXWSSTD."products.wsstd.dv.p2r::DV_PRELID" prelid
             JOIN tpm_node_names node1 ON prelid.GUID1 = node1.PNGUID
@@ -552,10 +551,49 @@ WITH
         WHERE
             prelid.OPSYS = 'P2R'
             AND prelid.MANDT = '508'
-            AND node1.PNTYPE = 'Z_TPM'
-            AND node2.PNTYPE IN ('Z_GLPT', 'Z_PT_GL')
     ),
-    -- TPM data consolidated
+    -- ECLASS relations (ECLASS_S to ECLASS to GLPT)
+    tpm_eclass_relations AS (
+        SELECT DISTINCT
+            node1.NODEID_PNGUID AS ECLASS_S_PNGUID,
+            node1.NODE AS ECLASS_S,
+            node1.NODETXT AS ECLASS_STXT,
+            node2.NODEID_PNGUID AS ECLASS_PNGUID,
+            node2.NODE AS ECLASS,
+            node2.NODETXT AS ECLASSTXT,
+            node2.NODE_ITEMID_PNGUID AS GLPT_PNGUID,
+            node2.NODE_ITEM AS GLPT,
+            node2.NODE_ITEMTXT AS GLPTTXT
+        FROM
+            tpm_base_relations node1
+            JOIN tpm_base_relations node2 ON node1.NODE_ITEMID_PNGUID = node2.NODEID_PNGUID
+        WHERE
+            node1.NODEPNTYPE = 'Z_ECLASS'
+            AND node2.NODEPNTYPE = 'Z_ECLASS'
+    ),
+    -- TPM to GLPT/ECLASS relations
+    tpm_full_relations AS (
+        SELECT DISTINCT
+            noderelations.NODE_ITEMID_PNGUID AS TPM_PNGUID,
+            noderelations.NODE_ITEM AS TPM,
+            noderelations.NODE_ITEMTXT AS TPMTXT,
+            noderelations.NODEID_PNGUID AS GLPT_PNGUID,
+            noderelations.NODE AS GLPT,
+            noderelations.NODETXT AS GLPTTXT,
+            eclass_rel.ECLASS_PNGUID AS ECLASS_PNGUID,
+            eclass_rel.ECLASS AS ECLASS,
+            eclass_rel.ECLASSTXT AS ECLASSTXT,
+            eclass_rel.ECLASS_S_PNGUID AS ECLASS_S_PNGUID,
+            eclass_rel.ECLASS_S AS ECLASS_S,
+            eclass_rel.ECLASS_STXT AS ECLASS_STXT
+        FROM
+            tpm_base_relations noderelations
+            LEFT JOIN tpm_eclass_relations eclass_rel ON noderelations.NODEID_PNGUID = eclass_rel.GLPT_PNGUID
+        WHERE
+            noderelations.NODE_ITEMPNTYPE = 'Z_TPM'
+            AND noderelations.NODEPNTYPE = 'Z_PT_GL'
+    ),
+    -- TPM data consolidated with proper relations
     tpm_data AS (
         SELECT DISTINCT
             pnodid.PNAME AS TPM,
@@ -563,12 +601,12 @@ WITH
             params.OBJECT_PARAM_VAL AS TPM_STATUS,
             pncmp.TPM_PMD_NO,
             pncmp.PNGUID,
-            '' AS GLPT,
-            '' AS GLPTTXT,
-            '' AS ECLASS,
-            '' AS ECLASSTXT,
-            '' AS ECLASS_S,
-            '' AS ECLASS_STXT
+            COALESCE(rel.GLPT, '') AS GLPT,
+            COALESCE(rel.GLPTTXT, '') AS GLPTTXT,
+            COALESCE(rel.ECLASS, '') AS ECLASS,
+            COALESCE(rel.ECLASSTXT, '') AS ECLASSTXT,
+            COALESCE(rel.ECLASS_S, '') AS ECLASS_S,
+            COALESCE(rel.ECLASS_STXT, '') AS ECLASS_STXT
         FROM
             RXWSSTD."products.wsstd.dv.p2r::DV_PNCMP" pncmp
             INNER JOIN RXWSSTD."products.wsstd.dv.p2r::DV_PNODID" pnodid ON pncmp.PNGUID = pnodid.PNGUID
@@ -581,6 +619,7 @@ WITH
             AND params.MANDT = '508'
             AND params.OBJECT_PARAM = 'PTMSSTATUS'
             AND params.SEQ_NO = '000002'
+            LEFT JOIN tpm_full_relations rel ON pncmp.PNGUID = rel.TPM_PNGUID
         WHERE
             pnodid.OPSYS = 'P2R'
             AND pnodid.MANDT = '508'
@@ -968,15 +1007,15 @@ WITH
 SELECT
     -- Material Data
     MATDATA.MATNR AS "MATNR",
-    IFNULL (MATDATA.MAKTX, '') AS "MAKTX",
-    IFNULL (MATDATA.MTART, '') AS "MTART",
-    IFNULL (MATDATA.MSTAE, '') AS "MSTAE",
+    IFNULL (MATDATA.MAKTX, '') AS "MATERIAL_DESCRIPTION",
+    IFNULL (MATDATA.MTART, '') AS "MATERIAL_TYPE",
+    IFNULL (MATDATA.MSTAE, '') AS "XPLANT_STATUS",
     IFNULL (MATDATA.PRDHATXT, '') AS "PRDHATXT",
+    -- Makeup
+    IFNULL (MAKEUP.MAKEUP, '') AS "MAKEUP",
     -- Plants
     IFNULL (PLANTS.PLANTS, '') AS "PLANTS",
     IFNULL (PLANTS.PLANTS_TXT, '') AS "PLANTS_TXT",
-    -- Makeup
-    IFNULL (MAKEUP.MAKEUP, '') AS "MAKEUP",
     -- Z09 Characteristics
     IFNULL (Z09DATA."Contract_manufacturer_codetype", '') AS "CONTRACT_MANUFACTURER_CODETYPE",
     IFNULL (Z09DATA."Contract_manufacturer_code", '') AS "CONTRACT_MANUFACTURER_CODE",

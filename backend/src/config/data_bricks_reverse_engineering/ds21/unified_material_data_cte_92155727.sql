@@ -433,16 +433,25 @@ WITH
     -- Y08 Makeup data
     y08_makeup AS (
         SELECT DISTINCT
-            obj.OBJEK AS MATNR18,
-            SUBSTRING(obj.OBJEK, 11, 18) AS MATNR8,
-            obj.MERKMALSWERT AS MAKEUP
+            INOB.OBJEK AS MATNR18,
+            SUBSTRING(INOB.OBJEK, 11, 18) AS MATNR8,
+            AUSP.ATWRT AS MAKEUP
         FROM
-            RXWSSTD."products.wsstd.dv.pmd::DV_OBJMERKMAL" obj
+            RXWSSTD."products.wsstd.dv.p2r::DV_INOB" INOB
+            INNER JOIN RXWSSTD."products.wsstd.dv.p2r::DV_AUSP" AUSP ON INOB.KLART = AUSP.KLART
+            AND INOB.CUOBJ = AUSP.OBJEK
+            AND INOB.MANDT = AUSP.MANDT
+            AND INOB.OPSYS = AUSP.OPSYS
+            INNER JOIN RXWSSTD."products.wsstd.dv.p2r::DV_CABN" CABN ON AUSP.ATINN = CABN.ATINN
+            AND AUSP.MANDT = CABN.MANDT
+            AND AUSP.OPSYS = CABN.OPSYS
         WHERE
-            obj.KLASSENART = 'Y08'
-            AND obj.MERKMAL = 'Y08_LA_MAKEUP'
-            AND obj.KLASSE = 'Y08_BHC_LABELING'
-            AND obj.OBJEK LIKE '%91967086%' -- Filter for material 91967086
+            INOB.KLART = 'Y08'
+            AND INOB.OPSYS = 'P2R'
+            AND INOB.MANDT = '508'
+            AND AUSP.OPTYPE <> 'D'
+            AND CABN.ATNAM = 'Y08_LA_MAKEUP'
+            AND INOB.OBJEK LIKE '%91967086%' -- Filter for material 91967086
     ),
     -- Plants aggregated data
     plants_aggregated AS (

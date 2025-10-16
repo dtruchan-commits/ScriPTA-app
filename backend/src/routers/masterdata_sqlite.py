@@ -11,10 +11,10 @@ from .database import get_masterdata_from_db
 router = APIRouter(tags=["Masterdata"])
 
 
-@router.get("/get_masterdata_from_ds21", response_model=MasterdataConfigResponse)
-async def get_masterdata_from_ds21(matnr8: Optional[int] = Query(None, description="Filter by MATNR8", alias="matnr8")) -> MasterdataConfigResponse:
+@router.get("/get_masterdata_from_sqlite", response_model=MasterdataConfigResponse)
+async def get_masterdata_from_sqlite(matnr8: Optional[int] = Query(None, description="Filter by MATNR8", alias="matnr8")) -> MasterdataConfigResponse:
     """
-    Get masterdata configuration from DS21, optionally filtered by MATNR8.
+    Get masterdata configuration from in-memory SQLite database, optionally filtered by MATNR8.
 
     Args:
         matnr8: Optional MATNR8 (8-digit material number) to filter results (e.g., 91967086)

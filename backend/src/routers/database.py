@@ -633,7 +633,7 @@ def get_tpm_by_id_from_db(tpm_id: int) -> Optional[TpmConfig]:
 
 
 def get_masterdata_from_db(matnr8: Optional[int] = None) -> List:
-    """Retrieve masterdata from the database."""
+    """Retrieve masterdata from the sqlite database."""
     conn = get_db_connection()
     try:
         cursor = conn.cursor()

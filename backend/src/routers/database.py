@@ -807,3 +807,214 @@ def get_masterdata_from_db(matnr8: Optional[int] = None) -> List:
         return masterdata_list
     finally:
         conn.close()
+
+
+def create_masterdata_databricks_table():
+    """Create the masterdata_databricks table in SQLite if it doesn't exist."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # Drop existing table to recreate with correct schema
+        cursor.execute("DROP TABLE IF EXISTS masterdata_databricks")
+        
+        create_table_sql = """
+        CREATE TABLE masterdata_databricks (
+            MATNR TEXT PRIMARY KEY,
+            MATNR8 INTEGER,
+            MATERIAL_DESCRIPTION TEXT,
+            MATERIAL_TYPE TEXT,
+            XPLANT_STATUS TEXT,
+            PRDHATXT TEXT,
+            MAKEUP TEXT,
+            PLANTS TEXT,
+            PLANTS_TXT TEXT,
+            CONTRACT_MANUFACTURER_CODETYPE TEXT,
+            CONTRACT_MANUFACTURER_CODE TEXT,
+            RESPONSIBLE_FOR_SPECIFICATION TEXT,
+            CONTRACT_MANUFACTURER_MATERIAL TEXT,
+            LAYOUT_APPROVED TEXT,
+            USAGE_PREFIX TEXT,
+            NUMBER_OF_PAGES TEXT,
+            ACF_FLAG TEXT,
+            VISIBLE_MARKINGS TEXT,
+            CODE TEXT,
+            COLORS TEXT,
+            NUMBER_COLORS_FRONT TEXT,
+            CONTRACT_MANUFACTURER TEXT,
+            ARTICLE_CODETYPE TEXT,
+            ARTICLE_CODE TEXT,
+            CONTRACT_MAN_VISIBLE_MARKINGS TEXT,
+            CONTRACT_MANUFACTURER_MT_INDEX TEXT,
+            COMPONENT_SCRAB_KEY TEXT,
+            REMARKS TEXT,
+            PRINTED TEXT,
+            NUMBER_COLORS_BACK TEXT,
+            PRINT_CHARACTERISTICS TEXT,
+            BRAILLE_TEXT TEXT,
+            PRINTCHAR_BRAILLE TEXT,
+            PRINTCHAR_FOILSTAMP TEXT,
+            PRINTCHAR_GOLDHOTFOIL TEXT,
+            PRINTCHAR_EMBOSSDEBOSS TEXT,
+            PRINTCHAR_SPOTVARNISH TEXT,
+            PRINTCHAR_SCRATCHOFF TEXT,
+            PRINTCHAR_LAMINATION TEXT,
+            PRINTCHAR_DIECUT TEXT,
+            PRINTCHAR_PERFORATION TEXT,
+            PRINTCHAR_GLOSSVARNISH TEXT,
+            PRINTCHAR_LEAFLETING TEXT,
+            PRINTCHAR_FOLDING TEXT,
+            PRINTCHAR_RICHPALEGOLD TEXT,
+            PRINTCHAR_SILVERHOTFOIL TEXT,
+            PRINTCHAR_UNVARNISH TEXT,
+            PRINTCHAR_SECURITYVARISH TEXT,
+            PRINTCHAR_MATTVARNISH TEXT,
+            PRINTCHAR_CODINGBYSUPPLIER TEXT,
+            PRINTCHAR_BKLOGO TEXT,
+            PRINTCHAR_S_DR TEXT,
+            DRA_COMBINATION TEXT,
+            DRA_COMBINATION_DKTXTUC TEXT,
+            DRA_DIELINE TEXT,
+            DRA_DIELINE_DKTXTUC TEXT,
+            DRA_OTHER TEXT,
+            DRA_OTHER_DKTXTUC TEXT,
+            DRA_ALL TEXT,
+            DRA_ALL_DKTXTUC TEXT,
+            DRA_1 TEXT,
+            DRA_2 TEXT,
+            DRA_3 TEXT,
+            DRA_4 TEXT,
+            DRA_5 TEXT,
+            DRA_6 TEXT,
+            DRA_7 TEXT,
+            DRA_8 TEXT,
+            DRA_9 TEXT,
+            DRA_10 TEXT,
+            LRA TEXT,
+            LRA_VERSION TEXT,
+            LRA_DATE TEXT,
+            LRA_FILENAME TEXT,
+            HRL TEXT,
+            HRL_VERSION TEXT,
+            HRL_DATE TEXT,
+            ACS TEXT,
+            ACS_VERSION TEXT,
+            TPM_DRAWING TEXT,
+            TPM TEXT,
+            TPMTXT TEXT,
+            TPM_STATUS TEXT,
+            GLPT TEXT,
+            GLPTTXT TEXT,
+            ECLASS TEXT,
+            ECLASSTXT TEXT,
+            ECLASS_S TEXT,
+            ECLASS_S_TXT TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """
+        
+        cursor.execute(create_table_sql)
+        
+        # Create indexes for better performance
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_masterdata_databricks_matnr8 ON masterdata_databricks (MATNR8)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_masterdata_databricks_matnr ON masterdata_databricks (MATNR)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_masterdata_databricks_material_type ON masterdata_databricks (MATERIAL_TYPE)")
+        
+        conn.commit()
+        logging.info("masterdata_databricks table created successfully with updated schema")
+        
+    except Exception as e:
+        logging.error(f"Failed to create masterdata_databricks table: {str(e)}")
+        raise
+    finally:
+        conn.close()
+
+
+def save_masterdata_to_sqlite(masterdata_records: List[Dict]) -> int:
+    """Save masterdata records to the SQLite database."""
+    if not masterdata_records:
+        return 0
+    
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # Clear existing data
+        cursor.execute("DELETE FROM masterdata_databricks")
+        
+        # Prepare insert statement - using the first record to determine columns
+        first_record = masterdata_records[0]
+        columns = list(first_record.keys())
+        placeholders = ','.join(['?' for _ in columns])
+        insert_sql = f"INSERT OR REPLACE INTO masterdata_databricks ({','.join(columns)}) VALUES ({placeholders})"
+        
+        # Convert records to tuples
+        record_tuples = []
+        for record in masterdata_records:
+            tuple_data = tuple(record.get(col) for col in columns)
+            record_tuples.append(tuple_data)
+        
+        # Bulk insert
+        cursor.executemany(insert_sql, record_tuples)
+        
+        # Update the updated_at timestamp for all records
+        cursor.execute("UPDATE masterdata_databricks SET updated_at = CURRENT_TIMESTAMP")
+        
+        conn.commit()
+        
+        rows_saved = len(record_tuples)
+        logging.info(f"Saved {rows_saved} masterdata records to SQLite database")
+        
+        return rows_saved
+        
+    except Exception as e:
+        logging.error(f"Failed to save masterdata to SQLite: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        conn.close()
+
+
+def get_masterdata_databricks_stats():
+    """Get statistics about the masterdata_databricks table."""
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        
+        # Check if table exists
+        cursor.execute("""
+            SELECT name FROM sqlite_master
+            WHERE type='table' AND name='masterdata_databricks'
+        """)
+        
+        if not cursor.fetchone():
+            return {
+                "table_exists": False,
+                "record_count": 0,
+                "last_updated": None
+            }
+        
+        # Get record count
+        cursor.execute("SELECT COUNT(*) FROM masterdata_databricks")
+        count = cursor.fetchone()[0]
+        
+        # Get last updated timestamp
+        cursor.execute("SELECT MAX(updated_at) FROM masterdata_databricks")
+        last_updated = cursor.fetchone()[0]
+        
+        return {
+            "table_exists": True,
+            "record_count": count,
+            "last_updated": last_updated
+        }
+        
+    except Exception as e:
+        logging.error(f"Failed to get masterdata_databricks stats: {str(e)}")
+        return {
+            "table_exists": False,
+            "record_count": 0,
+            "last_updated": None,
+            "error": str(e)
+        }
+    finally:
+        conn.close()

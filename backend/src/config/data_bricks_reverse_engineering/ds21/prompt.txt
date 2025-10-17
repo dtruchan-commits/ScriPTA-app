@@ -1,0 +1,41 @@
+I am working in a GitHub Codespace, where I have a FastAPI backend that connects to Databricks. 
+A large SQL CTE is used to retrieve masterdata (backend/src/config/data_bricks_reverse_engineering/databricks_unified_material_data_cte.sql). 
+The query returns data for all materials (around 100MB in total), but querying Databricks for a specific materialnumber via the FastAPI backend takes around 20 seconds, which affects user experience (bad UX).
+
+Constraints:
+
+Databricks: I have no rights to create views or modify database structure. I can only execute the provided SQL query.
+Freshness: The data is updated daily, so caching is a viable strategy.
+Frontend: The Typescript frontend must receive material-specific data with response times well below 20 seconds (ideally instantaneously).
+Backend: The solution must leverage the FastAPI backend and the Codespace setup. The 100MB dataset must be preloaded for faster access on the backend.
+Goals:
+
+Reduce response latency to significantly under 20 seconds for materialnumber requests.
+Fetch the heavy SQL query data (100MB) only once daily to minimize redundant processing.
+Cache or store the data in a format that enables rapid access for individual material lookups.
+Proposed Final Strategy:
+
+Fetch and Store Data Once Daily:
+
+Run the SQL CTE query via a dedicated endpoint (/get_all_masterdata_from_databricks_before_startup) a day to retrieve the entire dataset (100MB) .
+Save the full dataset into an SQLite database at
+
+
+backend/scripta-db.sqlite3
+, inside the table
+
+
+masterdata_databricks
+.
+Preload Data on Backend Startup:
+
+When the FastAPI backend starts, load the dataset from the SQLite database into an in-memory SQLite instance.
+Use this in-memory database to handle all individual materialnumber queries. SQLite's in-memory functionality ensures ultra-fast reads with minimal overhead.
+FastAPI Access Flow:
+
+When a frontend request for a materialnumber is received, the FastAPI backend queries the in-memory SQLite database to return the relevant data almost instantly.
+Key Advantages:
+
+Reduces latency by avoiding repeated Databricks queries for each frontend request.
+Enables efficient daily updates by running the Databricks query once and caching the results.
+Using an in-memory SQLite database balances simplicity and speed while leveraging existing components (SQLite, FastAPI)
